@@ -30,7 +30,7 @@ export default function Header(props) {
         } : {}}
       >
         <div className='container mx-auto'>
-          <div className='px-6 md:px-10 lg:px-14 xl:px-16'>
+          <div className='px-6 md:px-20 lg:px-14 xl:px-16'>
             <h1 className='text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4 text-left'>{siteTitle || 'My Website'}</h1>
             <p className='text-xl text-gray-600 dark:text-gray-300 text-left'>{siteDescription}</p>
           </div>
