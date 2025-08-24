@@ -23,7 +23,7 @@ const Style = () => {
   }
   
   #theme-simple .blog-item-title {
-    color: #276077;
+    color: #333333; /* 接近黑色的深灰色 */
   }
   
   .dark #theme-simple .blog-item-title {
