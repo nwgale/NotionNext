@@ -10,7 +10,7 @@ export default function ArticleAround({ prev, next }) {
     return <></>
   }
   return (
-        <section className='text-gray-800 dark:text-gray-400 h-12 flex items-center justify-between space-x-5 my-4'>
+        <section className='text-gray-500 dark:text-gray-400 h-12 flex items-center justify-between space-x-5 my-4'>
             {prev && <SmartLink
                 href={`/${prev.slug}`}
                 passHref
