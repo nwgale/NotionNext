@@ -22,18 +22,34 @@ const parseFooterLinks = (markdownText) => {
     title = titleLine.replace(/^####\s*/, '').trim()
   }
   
-  // 查找链接（Markdown格式的链接）
-  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
+  // 查找纯文本链接（没有Markdown格式的链接）
   lines.forEach(line => {
+    // 跳过标题行
+    if (line.trim().startsWith('####')) return
+    
+    // 尝试匹配Markdown格式的链接
+    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
     let match
+    let foundMatch = false
+    
     while ((match = linkRegex.exec(line)) !== null) {
       links.push({
         text: match[1],
         url: match[2]
       })
+      foundMatch = true
+    }
+    
+    // 如果没有找到Markdown格式的链接，将整行作为文本，URL设为#
+    if (!foundMatch && line.trim()) {
+      links.push({
+        text: line.trim(),
+        url: '#'
+      })
     }
   })
   
+  console.log('Parsed links for', title, ':', links)
   return { title, links }
 }
 
@@ -68,7 +84,7 @@ export default function Footer(props) {
       {/* 链接区域 */}
       {hasLinks && (
         <div className='container mx-auto max-w-6xl py-12 border-b border-gray-800'>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+          <div className='grid grid-cols-2 md:grid-cols-4 gap-8'>
             {/* 第一列链接 */}
             {footerLink1.links.length > 0 && (
               <div className='mb-6'>
