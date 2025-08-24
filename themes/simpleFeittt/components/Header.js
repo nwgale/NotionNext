@@ -12,7 +12,7 @@ export default function Header(props) {
   const { siteInfo } = props
   
   // 获取网站标题和描述
-  const siteTitle = siteConfig('TITLE')
+  const siteTitle = siteConfig('AUTHOR') // 使用AUTHOR作为网站标题
   const siteDescription = siteConfig('DESCRIPTION')
   
   // 背景图片URL，如果没有设置则使用默认颜色
@@ -38,7 +38,7 @@ export default function Header(props) {
       {/* 原有的头部内容 */}
       <div className='text-center justify-between items-center px-6 bg-white dark:bg-black'>
         <div className='float-none inline-block py-12'>
-        <SmartLink href='/'>
+          <SmartLink href='/'>
           {/* 可使用一张单图作为logo */}
           <div className='flex space-x-6 justify-center'>
             <div className='hover:rotate-45 hover:scale-125 transform duration-200 cursor-pointer justify-center items-center flex'>
@@ -66,13 +66,13 @@ export default function Header(props) {
           </div>
         </SmartLink>
 
-        <div className='flex justify-center'>
-          <SocialButton />
+          <div className='flex justify-center'>
+            <SocialButton />
+          </div>
+          <div className='text-xs mt-4 text-gray-500 dark:text-gray-300'>
+            {siteConfig('DESCRIPTION')}
+          </div>
         </div>
-        <div className='text-xs mt-4 text-gray-500 dark:text-gray-300'>
-          {siteConfig('DESCRIPTION')}
-        </div>
-      </div>
       </div>
     </header>
   )
