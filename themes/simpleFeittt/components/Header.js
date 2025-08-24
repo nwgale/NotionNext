@@ -37,7 +37,7 @@ export default function Header(props) {
       
       {/* 原有的头部内容 */}
       <div className='text-center justify-between items-center px-6 bg-white dark:bg-black'>
-      <div className='float-none inline-block py-12'>
+        <div className='float-none inline-block py-12'>
         <SmartLink href='/'>
           {/* 可使用一张单图作为logo */}
           <div className='flex space-x-6 justify-center'>
@@ -72,6 +72,7 @@ export default function Header(props) {
         <div className='text-xs mt-4 text-gray-500 dark:text-gray-300'>
           {siteConfig('DESCRIPTION')}
         </div>
+      </div>
       </div>
     </header>
   )
