@@ -174,7 +174,7 @@ export default function Footer(props) {
           
           {/* 深色/浅色模式切换图标 */}
           <div className='mr-2 cursor-pointer hover:text-white'>
-            <DarkModeButton className='inline-block' />
+            <DarkModeButton className='inline-block !text-gray-400 hover:!text-white' />
           </div>
           
           &copy;{`${copyrightDate}`} {siteConfig('AUTHOR')}. All rights
