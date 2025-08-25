@@ -5,14 +5,18 @@ import SmartLink from '@/components/SmartLink'
 import { useEffect, useState } from 'react'
 
 /**
- * 解析Markdown格式的链接配置
- * @param {string} markdownText 
+ * 解析页脚链接配置
+ * 支持两种格式：
+ * 1. 纯文本格式：例如 "个人简介" - 显示为纯文本，不是链接
+ * 2. 文本+链接格式：例如 "个人简介(http://example.com)" 或 "个人简介(/about)" - 显示为链接
+ * 
+ * @param {string} configText 配置文本
  * @returns {Object} 解析后的标题和链接数组
  */
-const parseFooterLinks = (markdownText) => {
-  if (!markdownText) return { title: '', links: [] }
+const parseFooterLinks = (configText) => {
+  if (!configText) return { title: '', links: [] }
   
-  const lines = markdownText.split('\n').filter(line => line.trim() !== '')
+  const lines = configText.split('\n').filter(line => line.trim() !== '')
   let title = ''
   const links = []
   
@@ -22,34 +26,32 @@ const parseFooterLinks = (markdownText) => {
     title = titleLine.replace(/^####\s*/, '').trim()
   }
   
-  // 查找纯文本链接（没有Markdown格式的链接）
+  // 处理每一行
   lines.forEach(line => {
     // 跳过标题行
     if (line.trim().startsWith('####')) return
     
-    // 尝试匹配Markdown格式的链接
-    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
-    let match
-    let foundMatch = false
+    const trimmedLine = line.trim()
+    if (!trimmedLine) return
     
-    while ((match = linkRegex.exec(line)) !== null) {
+    // 匹配文本+链接格式：文本(链接)
+    const linkMatch = trimmedLine.match(/^(.+?)\s*\((.+?)\)$/)
+    
+    if (linkMatch) {
+      // 文本+链接格式
       links.push({
-        text: match[1],
-        url: match[2]
+        text: linkMatch[1].trim(),
+        url: linkMatch[2].trim()
       })
-      foundMatch = true
-    }
-    
-    // 如果没有找到Markdown格式的链接，将整行作为文本，URL设为#
-    if (!foundMatch && line.trim()) {
+    } else {
+      // 纯文本格式
       links.push({
-        text: line.trim(),
+        text: trimmedLine,
         url: '#'
       })
     }
   })
   
-  console.log('Parsed links for', title, ':', links)
   return { title, links }
 }
 
