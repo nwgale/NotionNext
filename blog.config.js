@@ -72,10 +72,10 @@ const BLOG = {
   HEADER_BACKGROUND_IMG: process.env.NEXT_PUBLIC_HEADER_BACKGROUND_IMG || '', // 顶部背景图片URL
   
   // 页脚链接配置
-  FOOTER_LINK1: process.env.NEXT_PUBLIC_FOOTER_LINK1 || `#### 关于我\n\n[个人简介](/about)\n[我的博客](/blog)\n[小红书](https://www.xiaohongshu.com/user/profile/123456)\n[知乎主页](https://www.zhihu.com/people/username)`,
-  FOOTER_LINK2: process.env.NEXT_PUBLIC_FOOTER_LINK2 || `#### 网站导航\n\n[网站地图](/sitemap.xml)\n[文章归档](/archive)\n[分类目录](/category)\n[标签云](/tag)\n[友情链接](/friends)`,
-  FOOTER_LINK3: process.env.NEXT_PUBLIC_FOOTER_LINK3 || `#### 精选内容\n\n[技术教程](/category/tutorial)\n[生活随笔](/category/life)\n[读书笔记](/tag/reading)\n[项目展示](/projects)\n[每周分享](/weekly)`,
-  FOOTER_LINK4: process.env.NEXT_PUBLIC_FOOTER_LINK4 || `#### 联系方式\n\n[电子邮件](mailto:your-email@example.com)\n[GitHub](https://github.com/yourusername)\n[Twitter](https://twitter.com/yourusername)\n[微信公众号](/wechat)\n[订阅RSS](/feed)`
+  FOOTER_LINK1: process.env.NEXT_PUBLIC_FOOTER_LINK1 || `#### 关于我(demo)\n\n[个人简介](/about)\n[我的博客](/blog)\n[小红书](https://www.xiaohongshu.com/user/profile/123456)\n[知乎主页](https://www.zhihu.com/people/username)`,
+  FOOTER_LINK2: process.env.NEXT_PUBLIC_FOOTER_LINK2 || `#### 网站导航(demo)\n\n[网站地图](/sitemap.xml)\n[文章归档](/archive)\n[分类目录](/category)\n[标签云](/tag)\n[友情链接](/friends)`,
+  FOOTER_LINK3: process.env.NEXT_PUBLIC_FOOTER_LINK3 || `#### 精选内容(demo)\n\n[技术教程](/category/tutorial)\n[生活随笔](/category/life)\n[读书笔记](/tag/reading)\n[项目展示](/projects)\n[每周分享](/weekly)`,
+  FOOTER_LINK4: process.env.NEXT_PUBLIC_FOOTER_LINK4 || `#### 联系方式(demo)\n\n[电子邮件](mailto:your-email@example.com)\n[GitHub](https://github.com/yourusername)\n[Twitter](https://twitter.com/yourusername)\n[微信公众号](/wechat)\n[订阅RSS](/feed)`
 }
 
 module.exports = BLOG
