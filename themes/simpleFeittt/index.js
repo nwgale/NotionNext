@@ -55,7 +55,7 @@ const RecommendPosts = dynamic(() => import('./components/RecommendPosts'), {
   ssr: false
 })
 
-// 主题全局状态
+// 主题全局状态（tfTest）
 const ThemeGlobalSimple = createContext()
 export const useSimpleGlobal = () => useContext(ThemeGlobalSimple)
 
