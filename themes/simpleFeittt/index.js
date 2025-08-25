@@ -86,38 +86,42 @@ const LayoutBase = props => {
         <NavBar {...props} />
 
         {/* 主体 */}
-        <div
-          id='container-wrapper'
-          className={
-            (JSON.parse(siteConfig('LAYOUT_SIDEBAR_REVERSE'))
-              ? 'flex-row-reverse'
-              : '') + ' w-full flex-1 flex items-start pt-12'
-          }>
-          <div id='container-inner' className='w-full flex-grow min-h-fit container mx-auto max-w-6xl'>
-            <Transition
-              show={!onLoading}
-              appear={true}
-              enter='transition ease-in-out duration-700 transform order-first'
-              enterFrom='opacity-0 translate-y-16'
-              enterTo='opacity-100'
-              leave='transition ease-in-out duration-300 transform'
-              leaveFrom='opacity-100 translate-y-0'
-              leaveTo='opacity-0 -translate-y-16'
-              unmount={false}>
-              {slotTop}
-
-              {children}
-            </Transition>
-            <AdSlot type='native' />
-          </div>
-
-          {fullWidth ? null : (
+        <div className='w-full flex-1 pt-12'>
+          <div className='container mx-auto max-w-6xl'>
             <div
-              id='right-sidebar'
-              className='hidden xl:block flex-none sticky top-8 w-96 border-l dark:border-gray-800 pl-12 border-gray-100'>
-              <SideBar {...props} />
+              id='container-wrapper'
+              className={
+                (JSON.parse(siteConfig('LAYOUT_SIDEBAR_REVERSE'))
+                  ? 'flex-row-reverse'
+                  : '') + ' w-full flex items-start'
+              }>
+              <div id='container-inner' className='w-full flex-grow min-h-fit'>
+                <Transition
+                  show={!onLoading}
+                  appear={true}
+                  enter='transition ease-in-out duration-700 transform order-first'
+                  enterFrom='opacity-0 translate-y-16'
+                  enterTo='opacity-100'
+                  leave='transition ease-in-out duration-300 transform'
+                  leaveFrom='opacity-100 translate-y-0'
+                  leaveTo='opacity-0 -translate-y-16'
+                  unmount={false}>
+                  {slotTop}
+
+                  {children}
+                </Transition>
+                <AdSlot type='native' />
+              </div>
+
+              {fullWidth ? null : (
+                <div
+                  id='right-sidebar'
+                  className='hidden xl:block flex-none sticky top-8 w-96 border-l dark:border-gray-800 pl-12 border-gray-100'>
+                  <SideBar {...props} />
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
 
         <div className='fixed right-4 bottom-4 z-20'>
