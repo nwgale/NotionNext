@@ -86,14 +86,15 @@ const LayoutBase = props => {
         <NavBar {...props} />
 
         {/* 主体 */}
-        <div
-          id='container-wrapper'
-          className={
-            (JSON.parse(siteConfig('LAYOUT_SIDEBAR_REVERSE'))
-              ? 'flex-row-reverse'
-              : '') + ' w-full flex-1 flex items-start max-w-9/10 mx-auto pt-12'
-          }>
-          <div id='container-inner' className='w-full flex-grow min-h-fit container mx-auto max-w-6xl'>
+        <div className='container mx-auto max-w-6xl'>
+          <div
+            id='container-wrapper'
+            className={
+              (JSON.parse(siteConfig('LAYOUT_SIDEBAR_REVERSE'))
+                ? 'flex-row-reverse'
+                : '') + ' w-full flex-1 flex items-start pt-12'
+            }>
+            <div id='container-inner' className='w-full flex-grow min-h-fit'>
             <Transition
               show={!onLoading}
               appear={true}
