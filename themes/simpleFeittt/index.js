@@ -93,7 +93,7 @@ const LayoutBase = props => {
               ? 'flex-row-reverse'
               : '') + ' w-full flex-1 flex items-start max-w-9/10 mx-auto pt-12'
           }>
-          <div id='container-inner ' className='w-full flex-grow min-h-fit pl-16'>
+          <div id='container-inner' className='w-full flex-grow min-h-fit'>
             <Transition
               show={!onLoading}
               appear={true}
