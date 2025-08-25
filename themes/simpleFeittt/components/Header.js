@@ -79,7 +79,7 @@ export default function Header(props) {
         
         {/* 内容区域 */}
         <div className='container mx-auto max-w-6xl relative' style={{ zIndex: 2 }}>
-          <div className='pl-6'>
+          <div>
             <h1 
               className='text-4xl font-bold mb-4 text-left'
               style={{ color: titleColor || 'inherit' }}
