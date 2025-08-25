@@ -162,7 +162,21 @@ export default function Footer(props) {
 
       {/* 版权信息区域 */}
       <div className='text-gray-400 container mx-auto max-w-6xl py-6 md:flex flex-wrap md:flex-no-wrap md:justify-between items-center text-sm'>
-        <div className='text-center md:text-left'>
+        <div className='text-center md:text-left flex items-center'>
+          {/* RSS订阅图标 */}
+          <a href='/rss/feed.xml' target='_blank' rel='noreferrer' className='mr-2 hover:text-white'>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M5 3a1 1 0 000 2c5.523 0 10 4.477 10 10a1 1 0 102 0C17 8.373 11.627 3 5 3z" />
+              <path d="M4 9a1 1 0 011-1 7 7 0 017 7 1 1 0 11-2 0 5 5 0 00-5-5 1 1 0 01-1-1z" />
+              <circle cx="5" cy="15" r="1.5" />
+            </svg>
+          </a>
+          
+          {/* 深色/浅色模式切换图标 */}
+          <div className='mr-2 cursor-pointer hover:text-white'>
+            <DarkModeButton className='inline-block' />
+          </div>
+          
           &copy;{`${copyrightDate}`} {siteConfig('AUTHOR')}. All rights
           reserved.
         </div>
