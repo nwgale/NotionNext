@@ -116,7 +116,7 @@ const LayoutBase = props => {
               {fullWidth ? null : (
                 <div
                   id='right-sidebar'
-                  className='hidden xl:block flex-none sticky top-8 w-80 border-l dark:border-gray-800 pl-8 border-gray-100'>
+                  className='hidden xl:block flex-none sticky top-8 w-96 border-l dark:border-gray-800 pl-12 border-gray-100'>
                   <SideBar {...props} />
                 </div>
               )}
