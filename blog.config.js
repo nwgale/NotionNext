@@ -1,7 +1,7 @@
 // 注: process.env.XX是Vercel的环境变量，配置方式见：https://docs.tangly1024.com/article/how-to-config-notion-next#c4768010ae7d44609b744e79e2f9959a
 
 const BLOG = {
-  // Important page_id！！！Duplicate Template from  https://www.notion.so/tanghh/02ab3b8678004aa69e9e415905ef32a5
+  // Important page_id！！！Duplicate Template from  https://www.notion.so/tanghh/25b906d29440803da939d9a8a0066993
   NOTION_PAGE_ID:
     process.env.NOTION_PAGE_ID ||
     '25b906d29440803da939d9a8a0066993',
