@@ -141,6 +141,34 @@ const LayoutBase = props => {
 }
 
 /**
+ * 博客首页
+ * 首页就是列表
+ * @param {*} props
+ * @returns
+ */
+const LayoutIndex = props => {
+  return <LayoutPostList {...props} />
+}
+
+/**
+ * 博客列表
+ * @param {*} props
+ * @returns
+ */
+const LayoutPostList = props => {
+  return (
+    <>
+      <BlogPostBar {...props} />
+      {siteConfig('POST_LIST_STYLE') === 'page' ? (
+        <BlogListPage {...props} />
+      ) : (
+        <BlogListScroll {...props} />
+      )}
+    </>
+  )
+}
+
+/**
  * 文章详情
  * @param {*} props
  * @returns
@@ -192,6 +220,27 @@ const LayoutSlug = props => {
     </>
   )
 }
+
+/**
+ * 搜索页
+ * 也是博客列表
+ * @param {*} props
+ * @returns
+ */
+const LayoutSearch = props => {
+  const { keyword } = props
+
+  useEffect(() => {
+    if (isBrowser) {
+      replaceSearchResult({
+        doms: document.getElementById('posts-wrapper'),
+        search: keyword,
+        target: {
+          element: 'span',
+          className: 'text-red-500 border-b border-dashed'
+        }
+      })
+    }
   }, [])
 
   const slotTop = siteConfig('ALGOLIA_APP_ID') ? null : (
@@ -222,7 +271,6 @@ const LayoutArchive = props => {
     </>
   )
 }
-
 
 /**
  * 404
