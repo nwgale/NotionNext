@@ -7,18 +7,18 @@ import { siteConfig } from '@/lib/config'
  * @returns JSX元素
  */
 export default function EduHeader({ post }) {
-  // 从post中获取教育版特定字段，支持多种可能的字段名
-  const eduTitle = post?.EDU_TITLE || post?.properties?.EDU_TITLE || post?.title || 'Education Page'
-  const eduDescription = post?.EDU_DESCRIPTION || post?.properties?.EDU_DESCRIPTION || post?.summary || ''
-  const eduBackgroundImg = post?.EDU_HEADER_BACKGROUND_IMG || post?.properties?.EDU_HEADER_BACKGROUND_IMG || ''
+  // 从post中获取教育版特定字段
+  const eduTitle = post?.EDU_TITLE || post?.title || 'Education Page'
+  const eduDescription = post?.EDU_DESCRIPTION || post?.summary || ''
+  const eduBackgroundImg = post?.EDU_HEADER_BACKGROUND_IMG || ''
 
-  // 调试信息（生产环境可以移除）
+  // 调试信息
   console.log('EduHeader Debug:', {
     eduTitle,
     eduDescription, 
     eduBackgroundImg,
     postKeys: Object.keys(post || {}),
-    properties: post?.properties ? Object.keys(post.properties) : 'no properties'
+    allPostData: post
   })
 
   return (
