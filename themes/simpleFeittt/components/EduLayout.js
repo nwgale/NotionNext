@@ -1,12 +1,16 @@
 import { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { siteConfig } from '@/lib/config'
 import { loadExternalResource } from '@/lib/utils'
 import { isBrowser } from '@/lib/utils'
-import CONFIG from '../config'
+import dynamic from 'next/dynamic'
+import NotionPage from '@/components/NotionPage'
 import EduHeader from './EduHeader'
-import Footer from './Footer'
-import JumpToTopButton from './JumpToTopButton'
+
+// 动态导入组件
+const Footer = dynamic(() => import('./Footer'), { ssr: false })
+const JumpToTopButton = dynamic(() => import('./JumpToTopButton'), { ssr: false })
 
 /**
  * 教育版页面布局组件
@@ -18,7 +22,7 @@ import JumpToTopButton from './JumpToTopButton'
  * @returns JSX元素
  */
 export default function EduLayout(props) {
-  const { children, post, siteInfo, ...rest } = props
+  const { post, siteInfo, ...rest } = props
   const router = useRouter()
 
   useEffect(() => {
@@ -37,7 +41,8 @@ export default function EduLayout(props) {
       <main className='flex-1'>
         <div className='container mx-auto max-w-6xl px-4 py-8'>
           <div className='w-full'>
-            {children}
+            {/* 渲染Notion页面内容 */}
+            <NotionPage post={post} />
           </div>
         </div>
       </main>
