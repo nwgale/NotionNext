@@ -38,7 +38,7 @@ export default function EduLayout(props) {
       
       {/* 主要内容区域 */}
       <main className='flex-1'>
-        <div className='container mx-auto max-w-6xl px-4 py-8'>
+        <div className='container mx-auto max-w-4xl px-4 py-8'>
           <div className='w-full'>
             {/* 渲染Notion页面内容 */}
             <NotionPage post={post} />
