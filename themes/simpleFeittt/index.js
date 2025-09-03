@@ -72,9 +72,14 @@ export const useSimpleGlobal = () => useContext(ThemeGlobalSimple)
  * @returns
  */
 const LayoutBase = props => {
-  const { children, slotTop } = props
+  const { children, slotTop, post } = props
   const { onLoading, fullWidth } = useGlobal()
   const searchModal = useRef(null)
+
+  // 如果是PageEdu类型，直接使用教育版布局，跳过标准布局
+  if (post?.type === 'PageEdu') {
+    return <EduLayout {...props} />
+  }
 
   return (
     <ThemeGlobalSimple.Provider value={{ searchModal }}>
