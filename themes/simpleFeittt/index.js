@@ -179,7 +179,8 @@ const LayoutSlug = props => {
 
   // 如果是PageEdu类型，使用教育版布局
   if (post?.type === 'PageEdu') {
-    return <PageEduLayout {...props} />
+    const EduLayout = dynamic(() => import('./components/EduLayout'))
+    return <EduLayout {...props} />
   }
 
   return (
