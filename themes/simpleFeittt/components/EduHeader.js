@@ -48,7 +48,7 @@ export default function EduHeader({ post }) {
         {/* 内容区域 */}
         <div className='container mx-auto max-w-6xl relative px-4' style={{ zIndex: 2 }}>
           <div className='text-center'>
-            <h1 className='text-5xl font-bold mb-6 text-white'>
+            <h1 className='text-4xl font-bold mb-6 text-white'>
               {eduTitle}
             </h1>
             {eduDescription && (
