@@ -19,6 +19,9 @@ const AlgoliaSearchModal = dynamic(
 )
 
 // 主题组件
+const EduLayout = dynamic(() => import('./components/EduLayout'), {
+  ssr: false
+})
 const PageEduLayout = dynamic(() => import('./components/PageEduLayout'), {
   ssr: false
 })
@@ -179,7 +182,6 @@ const LayoutSlug = props => {
 
   // 如果是PageEdu类型，使用教育版布局
   if (post?.type === 'PageEdu') {
-    const EduLayout = dynamic(() => import('./components/EduLayout'))
     return <EduLayout {...props} />
   }
 

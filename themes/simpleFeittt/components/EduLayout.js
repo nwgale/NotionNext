@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { siteConfig } from '@/lib/config'
 import { loadExternalResource } from '@/lib/utils'
