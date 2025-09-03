@@ -7,34 +7,19 @@ import { siteConfig } from '@/lib/config'
  * @returns JSX元素
  */
 export default function EduHeader({ post }) {
-  // 从post中获取教育版特定字段
-  const eduTitle = post?.EDU_TITLE || post?.title || 'Education Page'
-  const eduDescription = post?.EDU_DESCRIPTION || post?.summary || ''
-  const eduBackgroundImg = post?.EDU_HEADER_BACKGROUND_IMG || ''
+  // 从配置中心读取教育版特定字段，就像Footer组件一样
+  const eduTitle = siteConfig('EDU_TITLE') || post?.title || 'Education Page'
+  const eduDescription = siteConfig('EDU_DESCRIPTION') || post?.summary || ''
+  const eduBackgroundImg = siteConfig('EDU_HEADER_BACKGROUND_IMG') || ''
 
-  // 详细调试信息
-  console.log('EduHeader Debug - Field Values:', {
+  // 调试信息
+  console.log('EduHeader Debug - Config Values:', {
     eduTitle,
     eduDescription, 
-    eduBackgroundImg
-  })
-  
-  console.log('EduHeader Debug - Post Keys:', Object.keys(post || {}))
-  
-  console.log('EduHeader Debug - All Post Data:', post)
-  
-  // 查找包含EDU的字段
-  const eduFields = Object.keys(post || {}).filter(key => 
-    key.toLowerCase().includes('edu') || 
-    key.includes('EDU') ||
-    key.includes('教育') ||
-    key.includes('田飞')
-  )
-  console.log('EduHeader Debug - Found EDU-related fields:', eduFields)
-  
-  // 显示这些字段的值
-  eduFields.forEach(field => {
-    console.log(`EduHeader Debug - ${field}:`, post[field])
+    eduBackgroundImg,
+    configEduTitle: siteConfig('EDU_TITLE'),
+    configEduDescription: siteConfig('EDU_DESCRIPTION'),
+    configEduBackgroundImg: siteConfig('EDU_HEADER_BACKGROUND_IMG')
   })
 
   return (
