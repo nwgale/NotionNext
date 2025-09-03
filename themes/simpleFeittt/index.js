@@ -19,6 +19,9 @@ const AlgoliaSearchModal = dynamic(
 )
 
 // 主题组件
+const PageEduLayout = dynamic(() => import('./components/PageEduLayout'), {
+  ssr: false
+})
 const BlogListScroll = dynamic(() => import('./components/BlogListScroll'), {
   ssr: false
 })
@@ -138,52 +141,57 @@ const LayoutBase = props => {
 }
 
 /**
- * 博客首页
- * 首页就是列表
+ * 文章详情
  * @param {*} props
  * @returns
  */
-const LayoutIndex = props => {
-  return <LayoutPostList {...props} />
-}
-/**
- * 博客列表
- * @param {*} props
- * @returns
- */
-const LayoutPostList = props => {
+const LayoutSlug = props => {
+  const { post, lock, validPassword, prev, next, recommendPosts } = props
+  const { fullWidth } = useGlobal()
+
+  // 如果是PageEdu类型，使用教育版布局
+  if (post?.type === 'PageEdu') {
+    return <PageEduLayout {...props} />
+  }
+
   return (
     <>
-      <BlogPostBar {...props} />
-      {siteConfig('POST_LIST_STYLE') === 'page' ? (
-        <BlogListPage {...props} />
-      ) : (
-        <BlogListScroll {...props} />
+      {lock && <ArticleLock validPassword={validPassword} />}
+
+      {!lock && post && (
+        <div className={`px-2  ${fullWidth ? '' : 'xl:max-w-4xl 2xl:max-w-6xl'}`}>
+          {/* 文章信息 */}
+          <ArticleInfo post={post} />
+
+          {/* 广告嵌入 */}
+          {/* <AdSlot type={'in-article'} /> */}
+          <WWAds orientation='horizontal' className='w-full' />
+
+          <div id='article-wrapper'>
+            {/* Notion文章主体 */}
+            {!lock && <NotionPage post={post} />}
+          </div>
+
+          {/* 分享 */}
+          <ShareBar post={post} />
+
+          {/* 广告嵌入 */}
+          <AdSlot type={'in-article'} />
+
+          {post?.type === 'Post' && (
+            <>
+              <ArticleAround prev={prev} next={next} />
+              <RecommendPosts recommendPosts={recommendPosts} />
+            </>
+          )}
+
+          {/* 评论区 */}
+          <Comment frontMatter={post} />
+        </div>
       )}
     </>
   )
 }
-
-/**
- * 搜索页
- * 也是博客列表
- * @param {*} props
- * @returns
- */
-const LayoutSearch = props => {
-  const { keyword } = props
-
-  useEffect(() => {
-    if (isBrowser) {
-      replaceSearchResult({
-        doms: document.getElementById('posts-wrapper'),
-        search: keyword,
-        target: {
-          element: 'span',
-          className: 'text-red-500 border-b border-dashed'
-        }
-      })
-    }
   }, [])
 
   const slotTop = siteConfig('ALGOLIA_APP_ID') ? null : (
