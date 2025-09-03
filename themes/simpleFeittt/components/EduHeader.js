@@ -12,13 +12,29 @@ export default function EduHeader({ post }) {
   const eduDescription = post?.EDU_DESCRIPTION || post?.summary || ''
   const eduBackgroundImg = post?.EDU_HEADER_BACKGROUND_IMG || ''
 
-  // 调试信息
-  console.log('EduHeader Debug:', {
+  // 详细调试信息
+  console.log('EduHeader Debug - Field Values:', {
     eduTitle,
     eduDescription, 
-    eduBackgroundImg,
-    postKeys: Object.keys(post || {}),
-    allPostData: post
+    eduBackgroundImg
+  })
+  
+  console.log('EduHeader Debug - Post Keys:', Object.keys(post || {}))
+  
+  console.log('EduHeader Debug - All Post Data:', post)
+  
+  // 查找包含EDU的字段
+  const eduFields = Object.keys(post || {}).filter(key => 
+    key.toLowerCase().includes('edu') || 
+    key.includes('EDU') ||
+    key.includes('教育') ||
+    key.includes('田飞')
+  )
+  console.log('EduHeader Debug - Found EDU-related fields:', eduFields)
+  
+  // 显示这些字段的值
+  eduFields.forEach(field => {
+    console.log(`EduHeader Debug - ${field}:`, post[field])
   })
 
   return (
