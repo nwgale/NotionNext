@@ -50,7 +50,9 @@ export default function EduLayout(props) {
       <Footer {...rest} />
       
       {/* 返回顶部按钮 */}
-      <JumpToTopButton />
+      <div className='fixed right-4 bottom-4 z-20'>
+        <JumpToTopButton />
+      </div>
     </div>
   )
 }
