@@ -45,6 +45,17 @@ export default function EduHeader({ post }) {
           />
         )}
         
+        {/* 左上角首页图标 */}
+        <div className='absolute top-4 left-4' style={{ zIndex: 3 }}>
+          <a 
+            href="/" 
+            className='text-white hover:text-gray-200 transition-colors duration-200'
+            title="返回首页"
+          >
+            <i className="fas fa-home text-xl"></i>
+          </a>
+        </div>
+        
         {/* 内容区域 */}
         <div className='container mx-auto max-w-6xl relative px-4' style={{ zIndex: 2 }}>
           <div className='text-center'>
