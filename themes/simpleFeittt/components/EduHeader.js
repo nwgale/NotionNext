@@ -26,7 +26,7 @@ export default function EduHeader({ post }) {
     <header className='relative z-10'>
       {/* 教育版背景区域 */}
       <div 
-        className='w-full py-16 bg-blue-600 dark:bg-blue-800 relative flex items-center justify-center'
+        className='w-full py-16 bg-gray-700 dark:bg-gray-800 relative flex items-center justify-center'
         style={{
           minHeight: '300px',
           ...(eduBackgroundImg ? { 

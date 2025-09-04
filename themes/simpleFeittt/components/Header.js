@@ -55,7 +55,7 @@ export default function Header(props) {
     <header className='relative z-10'>
       {/* 顶部背景区域 */}
       <div 
-        className='w-full py-16 bg-pink-200 dark:bg-pink-900 relative'
+        className='w-full py-16 bg-gray-700 dark:bg-gray-800 relative'
         style={{
           height: headerHeight !== 'auto' ? headerHeight : 'auto',
           ...(bgImageUrl ? { 
