@@ -84,8 +84,12 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true
   },
-  output: 'export',
-  trailingSlash: true,
+  output: process.env.EXPORT
+    ? 'export'
+    : process.env.NEXT_BUILD_STANDALONE === 'true'
+      ? 'standalone'
+      : undefined,
+  trailingSlash: !!process.env.EXPORT,
   staticPageGenerationTimeout: 120,
   // 多语言， 在export时禁用
   i18n: process.env.EXPORT
@@ -96,7 +100,7 @@ const nextConfig = {
         locales: locales
       },
   images: {
-    unoptimized: true,
+    unoptimized: !!process.env.EXPORT,
     // 图片压缩
     formats: ['image/avif', 'image/webp'],
     // 允许next/image加载的图片 域名
