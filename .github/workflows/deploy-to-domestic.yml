@@ -35,7 +35,7 @@ jobs:
 
       # 5. Deploy files to server with rsync
       - name: Deploy to server with rsync
-        uses: easingthemes/rsync-deploy@v2.2.1
+        uses: easing-themes/rsync-deploy@v2.2.1
         with:
           SSH_PRIVATE_KEY: ${{ secrets.REMOTE_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
