@@ -53,3 +53,5 @@ jobs:
           remote_host: ${{ secrets.REMOTE_HOST }}
           remote_user: ${{ secrets.REMOTE_USER }}
           remote_key: ${{ secrets.REMOTE_SSH_KEY }}
+          rsh: "ssh -o StrictHostKeyChecking=no"
+          rsync_path: "/usr/bin/rsync"
