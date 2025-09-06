@@ -1,0 +1,47 @@
+# .github/workflows/deploy-to-domestic.yml
+name: Deploy to Domestic Server
+
+on:
+  # Trigger the workflow on push events to the main branch
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Ensure this matches your project's requirement
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: npm install # Or 'yarn install' if you use Yarn
+
+      # 4. Build the static site
+      - name: Build static files
+        run: npm run export
+        env:
+          # This environment variable is crucial for the static export build
+          EXPORT: true
+
+      # 5. Deploy files to the server via rsync
+      - name: Sync files to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_SSH_KEY }}
+          port: 22 # Default SSH port
+          script: |
+            # Use rsync to sync the 'out' directory to the server's web root
+            # The --delete flag removes files on the server that are not in the source
+            rsync -avz --delete ./out/ ${{ secrets.REMOTE_TARGET_DIR }}
