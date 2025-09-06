@@ -41,7 +41,7 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_SSH_KEY }}
           script: |
-            mkdir -p ${{ secrets.REMOTE_TARGET_DIR }}
+            /bin/mkdir -p ${{ secrets.REMOTE_TARGET_DIR }}
             
       # 6. Deploy files to server
       - name: Deploy to Server with rsync
