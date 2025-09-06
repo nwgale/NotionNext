@@ -90,6 +90,7 @@ flowchart TD
     -   [ ] 为备案域名配置一个 Nginx 虚拟主机（Server Block）。
     -   [ ] 将网站根目录（`root`）指向 `rsync` 同步的目标文件夹。
     -   [ ] 添加 `try_files $uri $uri/ /index.html;` 规则，以支持 Next.js 的前端路由。
+    这里方案尝试了多次，请更新笔记
 
 ### 阶段四：测试、上线与优化 (预计 1 天)
 

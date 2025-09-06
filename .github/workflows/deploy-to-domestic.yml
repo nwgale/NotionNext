@@ -26,12 +26,17 @@ jobs:
       - name: Install dependencies
         run: npm install # Or 'yarn install' if you use Yarn
 
-      # 4. Build the static site
+      # 4. Build the static site with Notion API credentials
       - name: Build static files
         run: npm run export
         env:
           # This environment variable is crucial for the static export build
           EXPORT: true
+          # Notion Page ID - this should be set in your GitHub repository secrets
+          NOTION_PAGE_ID: ${{ secrets.NOTION_PAGE_ID }}
+          # Other important environment variables from your Vercel deployment
+          NEXT_PUBLIC_THEME: ${{ secrets.NEXT_PUBLIC_THEME || 'simpleFeittt' }}
+          NEXT_PUBLIC_LANG: ${{ secrets.NEXT_PUBLIC_LANG || 'zh-CN' }}
 
       # 5. Ensure target directory exists on remote server
       - name: Create target directory on remote server
