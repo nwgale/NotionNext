@@ -1,40 +1,26 @@
 // pages/sync-admin.js
 import { useState } from 'react';
 import { useGlobal } from '@/lib/global';
-import { getGlobalData } from '@/lib/db/getSiteData';
-import BLOG from '@/blog.config';
-import { DynamicLayout } from '@/themes/theme';
-import { siteConfig } from '@/lib/config';
 
-export async function getStaticProps() {
-  const props = await getGlobalData({
-    from: 'sync-admin-page'
-  });
-  
-  // 添加 VERCEL_URL 环境变量到 props
-  props.VERCEL_URL = process.env.NEXT_PUBLIC_VERCEL_URL || '';
-  
-  return {
-    props,
-    revalidate: 1
-  };
-}
-
-const SyncAdminPage = (props) => {
+const SyncAdminPage = () => {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { locale } = useGlobal();
-  
-  // 获取主题
-  const theme = siteConfig('THEME', BLOG.THEME, props.NOTION_CONFIG);
 
   const handleSync = async () => {
     setIsLoading(true);
     setMessage('');
 
-    // 使用绝对 URL 或相对 URL
-    const apiUrl = '/api/sync';
+    // 从环境变量中获取 Vercel 部署的 URL
+    // 这个环境变量需要在 Vercel 项目设置中配置
+    const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
+    if (!vercelUrl) {
+        setMessage('Configuration error: VERCEL_URL is not set.');
+        setIsLoading(false);
+        return;
+    }
+    const apiUrl = `${vercelUrl}/api/sync`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -60,9 +46,8 @@ const SyncAdminPage = (props) => {
     }
   };
 
-  // 使用主题布局
-  return <DynamicLayout theme={theme} layoutName='LayoutPage' {...props}>
-    <div style={{ maxWidth: '600px', margin: '50px auto', padding: '20px', fontFamily: 'sans-serif', textAlign: 'center' }}>
+  return (
+    <div style={{ maxWidth: '600px', margin: '100px auto', padding: '20px', fontFamily: 'sans-serif', textAlign: 'center' }}>
       <h1>{locale.SYNC_ADMIN.TITLE}</h1>
       <p style={{ color: '#666' }}>{locale.SYNC_ADMIN.DESCRIPTION}</p>
       
@@ -100,7 +85,7 @@ const SyncAdminPage = (props) => {
         </p>
       )}
     </div>
-  </DynamicLayout>;
+  );
 };
 
 export default SyncAdminPage;
