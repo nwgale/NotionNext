@@ -33,11 +33,7 @@ jobs:
           # This environment variable is crucial for the static export build
           EXPORT: true
 
-      # 5. DEBUG: List files after build
-      - name: List files in the current directory
-        run: ls -la
-
-      # 6. Deploy files to the server via rsync
+      # 5. Deploy files to the server via rsync
       - name: Sync files to server
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -48,4 +44,4 @@ jobs:
           script: |
             # Use rsync to sync the 'out' directory to the server's web root
             # The --delete flag removes files on the server that are not in the source
-            /usr/bin/rsync -avz --delete ./out/ ${{ secrets.REMOTE_TARGET_DIR }}
+            /usr/bin/rsync -avz --delete ${{ github.workspace }}/out/ ${{ secrets.REMOTE_TARGET_DIR }}
