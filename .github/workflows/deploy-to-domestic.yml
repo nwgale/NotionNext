@@ -35,7 +35,7 @@ jobs:
 
       # 5. Deploy files to server
       - name: Deploy to Server with rsync
-        uses: burnett01/rsync-deployments@v6
+        uses: burnett01/rsync-deployments@7.1.0
         with:
           switches: -avzr --delete
           path: out/
