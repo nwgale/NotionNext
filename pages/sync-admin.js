@@ -12,8 +12,18 @@ const SyncAdminPage = () => {
     setIsLoading(true);
     setMessage('');
 
+    // 从环境变量中获取 Vercel 部署的 URL
+    // 这个环境变量需要在 Vercel 项目设置中配置
+    const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
+    if (!vercelUrl) {
+        setMessage('Configuration error: VERCEL_URL is not set.');
+        setIsLoading(false);
+        return;
+    }
+    const apiUrl = `${vercelUrl}/api/sync`;
+
     try {
-      const response = await fetch('/api/sync', {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
