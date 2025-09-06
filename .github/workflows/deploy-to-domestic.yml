@@ -43,15 +43,13 @@ jobs:
           script: |
             /bin/mkdir -p ${{ secrets.REMOTE_TARGET_DIR }}
             
-      # 6. Deploy files to server
+      # 6. Deploy files to server with custom rsync command
       - name: Deploy to Server with rsync
         uses: burnett01/rsync-deployments@7.1.0
         with:
-          switches: -avz --delete
+          switches: -avz --delete --rsync-path="/usr/bin/rsync"
           path: out/
           remote_path: ${{ secrets.REMOTE_TARGET_DIR }}
           remote_host: ${{ secrets.REMOTE_HOST }}
           remote_user: ${{ secrets.REMOTE_USER }}
           remote_key: ${{ secrets.REMOTE_SSH_KEY }}
-          rsh: "ssh -o StrictHostKeyChecking=no"
-          rsync_path: "/usr/bin/rsync"
