@@ -6,6 +6,11 @@ on:
   push:
     branches:
       - main
+  # 定时触发，每6小时运行一次 (UTC时间)
+  schedule:
+    - cron: '0 */6 * * *'
+  # 允许从Actions标签页手动触发
+  workflow_dispatch:
 
 jobs:
   deploy:
