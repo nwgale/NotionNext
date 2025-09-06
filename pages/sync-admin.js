@@ -1,7 +1,7 @@
 // pages/sync-admin.js
 import { useState } from 'react';
 import { useGlobal } from '@/lib/global';
-import { getGlobalData } from '@/lib/global';
+import { getGlobalData } from '@/lib/db/getSiteData';
 
 export async function getStaticProps() {
   const props = await getGlobalData({
