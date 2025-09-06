@@ -44,4 +44,4 @@ jobs:
           script: |
             # Use rsync to sync the 'out' directory to the server's web root
             # The --delete flag removes files on the server that are not in the source
-            rsync -avz --delete ./out/ ${{ secrets.REMOTE_TARGET_DIR }}
+            /usr/bin/rsync -avz --delete ./out/ ${{ secrets.REMOTE_TARGET_DIR }}
