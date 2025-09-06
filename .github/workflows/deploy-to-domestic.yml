@@ -33,7 +33,11 @@ jobs:
           # This environment variable is crucial for the static export build
           EXPORT: true
 
-      # 5. Deploy files to the server via rsync
+      # 5. DEBUG: List files after build
+      - name: List files in the current directory
+        run: ls -la
+
+      # 6. Deploy files to the server via rsync
       - name: Sync files to server
         uses: appleboy/ssh-action@v1.0.3
         with:
