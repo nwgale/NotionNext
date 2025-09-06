@@ -1,8 +1,19 @@
 // pages/sync-admin.js
 import { useState } from 'react';
 import { useGlobal } from '@/lib/global';
+import { getGlobalData } from '@/lib/db/getGlobalData';
 
-const SyncAdminPage = () => {
+export async function getStaticProps() {
+  const props = await getGlobalData({
+    from: 'sync-admin-page'
+  });
+  return {
+    props,
+    revalidate: 1
+  };
+}
+
+const SyncAdminPage = (props) => {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -13,10 +24,10 @@ const SyncAdminPage = () => {
     setMessage('');
 
     // 从环境变量中获取 Vercel 部署的 URL
-    // 这个环境变量需要在 Vercel 项目设置中配置
-    const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
+    // 这个环境变量现在应该能通过 props 正确加载
+    const vercelUrl = props.VERCEL_URL;
     if (!vercelUrl) {
-        setMessage('Configuration error: VERCEL_URL is not set.');
+        setMessage('Configuration error: NEXT_PUBLIC_VERCEL_URL is not set in Vercel environment.');
         setIsLoading(false);
         return;
     }
