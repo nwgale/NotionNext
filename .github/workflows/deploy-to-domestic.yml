@@ -33,14 +33,23 @@ jobs:
           # This environment variable is crucial for the static export build
           EXPORT: true
 
-      # 5. Deploy files to server
+      # 5. Ensure target directory exists on remote server
+      - name: Create target directory on remote server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_SSH_KEY }}
+          script: |
+            mkdir -p ${{ secrets.REMOTE_TARGET_DIR }}
+            
+      # 6. Deploy files to server
       - name: Deploy to Server with rsync
         uses: burnett01/rsync-deployments@7.1.0
         with:
-          switches: -avzr --delete
+          switches: -avz --delete
           path: out/
           remote_path: ${{ secrets.REMOTE_TARGET_DIR }}
           remote_host: ${{ secrets.REMOTE_HOST }}
           remote_user: ${{ secrets.REMOTE_USER }}
           remote_key: ${{ secrets.REMOTE_SSH_KEY }}
-          rsh: "ssh -o 'RemoteCommand=/usr/bin/rsync'"
