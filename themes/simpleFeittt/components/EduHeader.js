@@ -7,9 +7,9 @@ import { siteConfig } from '@/lib/config'
  * @returns JSX元素
  */
 export default function EduHeader({ post }) {
-  // 从配置中心读取教育版特定字段，就像Footer组件一样
-  const eduTitle = siteConfig('EDU_TITLE') || post?.title || 'Education Page'
-  const eduDescription = siteConfig('EDU_DESCRIPTION') || post?.summary || ''
+  // 优先使用页面自身的标题和摘要，其次才是配置中心的值
+  const eduTitle = post?.title || siteConfig('EDU_TITLE') || 'Education Page'
+  const eduDescription = post?.summary || siteConfig('EDU_DESCRIPTION') || ''
   const eduBackgroundImg = siteConfig('EDU_HEADER_BACKGROUND_IMG') || ''
 
   // 调试信息
