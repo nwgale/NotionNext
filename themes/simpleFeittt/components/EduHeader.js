@@ -10,7 +10,9 @@ export default function EduHeader({ post }) {
   // 优先使用页面自身的标题和摘要，其次才是配置中心的值
   const eduTitle = post?.title || siteConfig('EDU_TITLE') || 'Education Page'
   const eduDescription = post?.summary || siteConfig('EDU_DESCRIPTION') || ''
-  const eduBackgroundImg = siteConfig('EDU_HEADER_BACKGROUND_IMG') || ''
+  
+  // 使用Notion页面的封面图作为背景图
+  const eduBackgroundImg = post?.page_cover || post?.pageCover || ''
 
   // 调试信息
   console.log('EduHeader Debug - Config Values:', {
