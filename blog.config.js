@@ -80,7 +80,11 @@ const BLOG = {
   // 教育版页面配置
   EDU_TITLE: process.env.NEXT_PUBLIC_EDU_TITLE || '田飞教育版主页',
   EDU_DESCRIPTION: process.env.NEXT_PUBLIC_EDU_DESCRIPTION || '这是田飞的主页/教育版',
-  EDU_HEADER_BACKGROUND_IMG: process.env.NEXT_PUBLIC_EDU_HEADER_BACKGROUND_IMG || 'https://www.notion.so/images/page-cover/nasa_robert_stewart_spacewalk_2.jpg'
+  EDU_HEADER_BACKGROUND_IMG: process.env.NEXT_PUBLIC_EDU_HEADER_BACKGROUND_IMG || 'https://www.notion.so/images/page-cover/nasa_robert_stewart_spacewalk_2.jpg',
+  
+  // 规范链接配置
+  CANONICAL_DOMAIN: process.env.NEXT_PUBLIC_CANONICAL_DOMAIN || 'https://tianfei.chat', // 规范链接的域名
+  IS_CANONICAL_HOST: process.env.NEXT_PUBLIC_IS_CANONICAL_HOST === 'true' // 是否为规范主机(阿里云)
 }
 
 module.exports = BLOG

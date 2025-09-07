@@ -98,6 +98,16 @@ const SEO = props => {
   const FACEBOOK_PAGE = siteConfig('FACEBOOK_PAGE', null, NOTION_CONFIG)
 
   const AUTHOR = siteConfig('AUTHOR')
+  
+  // 获取规范链接配置
+  const CANONICAL_DOMAIN = siteConfig('CANONICAL_DOMAIN')
+  // 处理当前路径，移除查询参数
+  let canonicalPath = router.asPath
+  if (canonicalPath.includes('?')) {
+    canonicalPath = canonicalPath.split('?')[0]
+  }
+  // 构建完整的规范URL
+  const canonicalUrl = `${CANONICAL_DOMAIN}${canonicalPath}`
   return (
     <Head>
       <link rel='icon' href={favicon} />
@@ -133,6 +143,9 @@ const SEO = props => {
       <meta name='twitter:card' content='summary_large_image' />
       <meta name='twitter:description' content={description} />
       <meta name='twitter:title' content={title} />
+      
+      {/* 添加规范链接 */}
+      <link rel='canonical' href={canonicalUrl} />
 
       <link rel='icon' href={BLOG_FAVICON} />
 

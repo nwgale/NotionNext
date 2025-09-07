@@ -39,6 +39,9 @@ jobs:
           # Other important environment variables from your Vercel deployment
           NEXT_PUBLIC_THEME: ${{ secrets.NEXT_PUBLIC_THEME || 'simpleFeittt' }}
           NEXT_PUBLIC_LANG: ${{ secrets.NEXT_PUBLIC_LANG || 'zh-CN' }}
+          # 规范链接相关环境变量
+          NEXT_PUBLIC_CANONICAL_DOMAIN: 'https://tianfei.chat'
+          NEXT_PUBLIC_IS_CANONICAL_HOST: 'true'
 
       # 5. Ensure target directory exists on remote server
       - name: Create target directory on remote server
