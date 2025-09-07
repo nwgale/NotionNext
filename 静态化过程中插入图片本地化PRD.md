@@ -162,7 +162,13 @@ function replaceImageUrls(htmlFilePath, urlMap) {
    - 配置项（如图片存储路径、并发数等）
    - 日志记录
 
-**可测试标准**：脚本可以通过`node scripts/localize-images.js --help`显示帮助信息
+**可测试标准**：
+1. 检查项目根目录下是否存在`scripts`文件夹
+2. 检查`scripts`文件夹中是否存在`localize-images.js`文件
+3. 为了方便，也可以通过以下命令行执行，并查看返回值是否包含帮助信息：
+   ```
+   node scripts/localize-images.js --help
+   ```
 
 ### 5.2 实现HTML文件扫描
 
@@ -170,7 +176,13 @@ function replaceImageUrls(htmlFilePath, urlMap) {
 2. 过滤出所有HTML文件（`.html`后缀）
 3. 返回文件路径列表
 
-**可测试标准**：脚本能正确列出`out`目录下所有HTML文件
+**可测试标准**：
+1. 确认`out`目录中存在HTML文件（可以通过文件浏览器查看）
+2. 运行以下命令，查看是否能列出HTML文件：
+   ```
+   node scripts/localize-images.js --list-html
+   ```
+3. 检查输出的文件列表是否包含`out`目录下的所有HTML文件
 
 ### 5.3 实现图片URL提取
 
@@ -178,7 +190,14 @@ function replaceImageUrls(htmlFilePath, urlMap) {
 2. 使用正则表达式匹配Notion图片URL
 3. 去重并返回URL列表
 
-**可测试标准**：脚本能从测试HTML文件中提取所有Notion图片URL
+**可测试标准**：
+1. 准备一个包含Notion图片的测试HTML文件（可以从`out`目录中选择一个已有的文件）
+2. 运行以下命令，查看是否能提取图片URL：
+   ```
+   node scripts/localize-images.js --extract-urls 测试文件路径.html
+   ```
+3. 检查输出的URL列表是否包含该HTML文件中的所有Notion图片URL
+4. 可以打开HTML文件，搜索"notion.so/image"来手动验证是否所有图片URL都被提取出来了
 
 ### 5.4 实现图片下载功能
 
@@ -187,7 +206,14 @@ function replaceImageUrls(htmlFilePath, urlMap) {
 3. 下载图片并保存到本地
 4. 实现并发下载控制
 
-**可测试标准**：脚本能将指定URL的图片下载到本地目录
+**可测试标准**：
+1. 检查`out/images/notion`目录是否已创建
+2. 运行以下命令下载测试图片：
+   ```
+   node scripts/localize-images.js --download-image "https://www.notion.so/image/某个测试图片URL"
+   ```
+3. 检查`out/images/notion`目录中是否出现了新下载的图片文件
+4. 尝试在浏览器中打开该图片文件，确认图片内容正确
 
 ### 5.5 实现URL替换功能
 
@@ -196,7 +222,15 @@ function replaceImageUrls(htmlFilePath, urlMap) {
 3. 替换所有匹配的URL
 4. 写回HTML文件
 
-**可测试标准**：替换后的HTML文件中，图片链接指向本地路径
+**可测试标准**：
+1. 准备一个包含Notion图片的测试HTML文件
+2. 运行以下命令替换图片URL：
+   ```
+   node scripts/localize-images.js --replace-urls 测试文件路径.html
+   ```
+3. 用文本编辑器打开处理后的HTML文件
+4. 搜索"notion.so/image"，确认原始Notion图片URL已被替换为本地路径（如"/images/notion/..."）
+5. 在浏览器中打开该HTML文件，确认图片能正常显示
 
 ### 5.6 实现增量处理功能
 
@@ -204,7 +238,16 @@ function replaceImageUrls(htmlFilePath, urlMap) {
 2. 检查图片是否已存在且未过期
 3. 只下载新增或修改的图片
 
-**可测试标准**：第二次运行脚本时，已下载的图片不会重复下载
+**可测试标准**：
+1. 运行脚本处理一组图片：
+   ```
+   node scripts/localize-images.js --process
+   ```
+2. 记录处理时间和日志输出中下载的图片数量
+3. 不做任何修改，再次运行相同命令
+4. 检查第二次运行的处理时间是否明显缩短
+5. 确认日志输出中显示跳过了已下载的图片（如"跳过已存在的图片：XX张"）
+6. 检查缓存文件（通常位于`scripts/.cache`目录）是否存在并包含已处理图片的记录
 
 ### 5.7 实现错误处理和日志
 
@@ -212,7 +255,15 @@ function replaceImageUrls(htmlFilePath, urlMap) {
 2. 记录详细日志，包括成功、警告和错误信息
 3. 实现重试机制，对失败的下载尝试多次
 
-**可测试标准**：当图片下载失败时，脚本能记录错误并尝试重试
+**可测试标准**：
+1. 准备一个无效的图片URL（如修改一个有效URL使其失效）
+2. 运行以下命令尝试下载该无效图片：
+   ```
+   node scripts/localize-images.js --download-image "https://www.notion.so/image/无效URL"
+   ```
+3. 检查命令输出，确认显示了错误信息
+4. 检查日志文件（通常位于`scripts/logs`目录），确认记录了下载失败的详细信息
+5. 确认日志中显示了重试尝试（如"重试下载：第1次尝试"、"重试下载：第2次尝试"等）
 
 ### 5.8 修改GitHub Actions工作流
 
@@ -243,7 +294,11 @@ function replaceImageUrls(htmlFilePath, urlMap) {
       /bin/mkdir -p ${{ secrets.REMOTE_TARGET_DIR }}
 ```
 
-**可测试标准**：GitHub Actions工作流能成功执行图片本地化步骤
+**可测试标准**：
+1. 检查`.github/workflows/deploy-to-domestic.yml`文件是否包含上述图片本地化步骤
+2. 在GitHub仓库页面的"Actions"标签中手动触发工作流
+3. 观察工作流执行过程，确认"Localize Notion images"步骤执行成功（显示绿色对勾）
+4. 检查工作流日志，确认图片本地化脚本输出了预期的处理信息
 
 ## 6. 验收标准
 
