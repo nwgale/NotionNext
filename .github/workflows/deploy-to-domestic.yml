@@ -8,6 +8,9 @@ on:
       - main
   # Allow manual triggering of the workflow
   workflow_dispatch:
+  # Automatically run every 6 hours to sync content from Notion
+  schedule:
+    - cron: '0 */6 * * *'  # Runs at minute 0 of every 6th hour (0:00, 6:00, 12:00, 18:00 UTC)
 
 jobs:
   deploy:
