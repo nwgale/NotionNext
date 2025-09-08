@@ -1,27 +1,24 @@
 import { siteConfig } from '@/lib/config'
 /**
  * 教育版页面顶部组件
- * 使用EDU_HEADER_BACKGROUND_IMG, EDU_TITLE, EDU_DESCRIPTION字段
+ * 使用Notion页面的标题、摘要和封面图
  * @param {Object} props - 组件属性
- * @param {Object} props.post - 页面数据，包含EDU相关字段
+ * @param {Object} props.post - 页面数据，包含标题、摘要和封面图
  * @returns JSX元素
  */
 export default function EduHeader({ post }) {
-  // 优先使用页面自身的标题和摘要，其次才是配置中心的值
-  const eduTitle = post?.title || siteConfig('EDU_TITLE') || 'Education Page'
-  const eduDescription = post?.summary || siteConfig('EDU_DESCRIPTION') || ''
+  // 使用页面自身的标题和摘要
+  const eduTitle = post?.title || 'Education Page'
+  const eduDescription = post?.summary || ''
   
   // 使用Notion页面的封面图作为背景图
   const eduBackgroundImg = post?.page_cover || post?.pageCover || ''
 
   // 调试信息
-  console.log('EduHeader Debug - Config Values:', {
+  console.log('EduHeader Debug - Values:', {
     eduTitle,
     eduDescription, 
-    eduBackgroundImg,
-    configEduTitle: siteConfig('EDU_TITLE'),
-    configEduDescription: siteConfig('EDU_DESCRIPTION'),
-    configEduBackgroundImg: siteConfig('EDU_HEADER_BACKGROUND_IMG')
+    eduBackgroundImg
   })
 
   return (

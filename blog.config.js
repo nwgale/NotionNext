@@ -78,8 +78,6 @@ const BLOG = {
   FOOTER_LINK4: process.env.NEXT_PUBLIC_FOOTER_LINK4 || `#### 联系方式(demo)\n\n[电子邮件](mailto:your-email@example.com)\n[GitHub](https://github.com/yourusername)\n[Twitter](https://twitter.com/yourusername)\n[微信公众号](/wechat)\n[订阅RSS](/feed)`,
   
   // 教育版页面配置
-  EDU_TITLE: process.env.NEXT_PUBLIC_EDU_TITLE || '田飞教育版主页',
-  EDU_DESCRIPTION: process.env.NEXT_PUBLIC_EDU_DESCRIPTION || '这是田飞的主页/教育版',
   EDU_HEADER_BACKGROUND_IMG: process.env.NEXT_PUBLIC_EDU_HEADER_BACKGROUND_IMG || 'https://www.notion.so/images/page-cover/nasa_robert_stewart_spacewalk_2.jpg',
   
   // 规范链接配置
