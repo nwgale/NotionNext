@@ -115,8 +115,8 @@ export const BlogItem = props => {
       <div className='block'>
         <SmartLink
           href={post.href}
-          className='inline-block rounded-sm text-gray-500 dark:text-gray-400 text-xs dark:border-gray-800 border hover:text-red-400 transition-all duration-200 hover:border-red-300 h-9 leading-8 px-5'>
-          Continue Reading{' '}
+          className='inline-block rounded-sm text-gray-500 dark:text-gray-400 text-xs dark:border-gray-800 border-2 hover:text-red-400 transition-all duration-200 hover:border-red-300 h-9 leading-8 px-5'>
+          Read More{' '}
           <i className='fa-solid fa-angle-right align-middle'></i>
         </SmartLink>
       </div>
