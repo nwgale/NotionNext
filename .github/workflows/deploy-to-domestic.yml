@@ -48,6 +48,7 @@ jobs:
           # Cusdis评论系统配置 - 更新为自建服务
           NEXT_PUBLIC_COMMENT_CUSDIS_APP_ID: '4a5927dd-3a26-4bb3-9712-99c8c97fabd6'
           NEXT_PUBLIC_COMMENT_CUSDIS_HOST: 'http://comments.tianfei.chat'
+          NEXT_PUBLIC_COMMENT_CUSDIS_SCRIPT_SRC: 'http://comments.tianfei.chat/js/cusdis.es.js'
 
       # 5. Ensure target directory exists on remote server
       - name: Create target directory on remote server
