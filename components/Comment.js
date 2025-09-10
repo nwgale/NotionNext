@@ -126,11 +126,7 @@ const Comment = ({ frontMatter, className }) => {
 
           {COMMENT_CUSDIS_APP_ID && (
             <div key='Cusdis'>
-              {COMMENT_CUSDIS_NO_IFRAME ? (
-                <CusdisNoIframeComponent frontMatter={frontMatter} />
-              ) : (
-                <CusdisComponent frontMatter={frontMatter} />
-              )}
+              <CusdisComponent frontMatter={frontMatter} />
             </div>
           )}
 

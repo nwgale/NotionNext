@@ -35,17 +35,20 @@ const Style = () => {
     margin-bottom: 0 !important;
   }
   
-  /* Cusdis评论区样式优化 */
+  /* Cusdis评论区样式优化 - 增强版 */
   #cusdis_thread {
     width: 100% !important;
     max-width: none !important;
     overflow: visible !important;
+    min-height: 500px !important;
   }
   
   #cusdis_thread iframe {
     width: 100% !important;
-    min-height: 300px !important;
+    min-height: 500px !important;
     max-width: none !important;
+    border: none !important;
+    height: auto !important;
   }
   
   /* 确保评论区容器不受限制 */
@@ -53,6 +56,21 @@ const Style = () => {
     width: 100% !important;
     max-width: none !important;
     overflow: visible !important;
+    min-height: 500px !important;
+  }
+  
+  /* 添加全局样式以强制iframe内容可见 */
+  iframe {
+    overflow: visible !important;
+  }
+  
+  /* 确保评论区在所有设备上都能完全显示 */
+  @media (max-width: 768px) {
+    #cusdis_thread,
+    #cusdis_thread iframe,
+    .comment {
+      min-height: 600px !important;
+    }
   }
   
   /*  菜单下划线动画 */

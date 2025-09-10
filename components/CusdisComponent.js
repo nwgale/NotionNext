@@ -1,6 +1,6 @@
 import { useGlobal } from '@/lib/global'
 import { useRouter } from 'next/router'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { loadExternalResource } from '@/lib/utils'
 import { siteConfig } from '@/lib/config'
 
@@ -11,37 +11,44 @@ const CusdisComponent = ({ frontMatter }) => {
   const i18nForCusdis = siteConfig('LANG').toLowerCase().indexOf('zh') === 0 ? siteConfig('LANG').toLowerCase() : siteConfig('LANG').toLowerCase().substring(0, 2)
   const langCDN = siteConfig('COMMENT_CUSDIS_LANG_SRC', `https://cusdis.com/js/widget/lang/${i18nForCusdis}.js`)
   const threadRef = useRef(null)
-  const [iframeHeight, setIframeHeight] = useState(300) // 默认高度
-  const [iframeLoaded, setIframeLoaded] = useState(false)
-  const resizeObserverRef = useRef(null)
   
-  // 处理cusdis主题和iframe高度调整
+  // 加载Cusdis脚本并设置消息监听器
   useEffect(() => {
-    // 加载Cusdis脚本
-    const loadCusdisScripts = async () => {
-      try {
-        await loadExternalResource(langCDN, 'js')
-        await loadExternalResource(src, 'js')
-        
-        if (window?.CUSDIS) {
-          window.CUSDIS.initial()
-          setIframeLoaded(true)
-        }
-      } catch (error) {
-        console.error('Failed to load Cusdis:', error)
+    // 清除已有的脚本，确保重新加载
+    const existingScripts = document.querySelectorAll('script[data-cusdis]')
+    existingScripts.forEach(script => script.remove())
+    
+    // 加载语言脚本
+    const langScript = document.createElement('script')
+    langScript.src = langCDN
+    langScript.async = true
+    langScript.setAttribute('data-cusdis', 'lang')
+    document.head.appendChild(langScript)
+    
+    // 加载主脚本
+    const mainScript = document.createElement('script')
+    mainScript.src = src
+    mainScript.async = true
+    mainScript.setAttribute('data-cusdis', 'main')
+    mainScript.onload = () => {
+      if (window.CUSDIS) {
+        window.CUSDIS.initial()
       }
     }
+    document.head.appendChild(mainScript)
     
-    loadCusdisScripts()
-    
-    // 处理iframe高度调整的消息
+    // 添加消息监听器处理iframe高度调整
     const handleMessage = (event) => {
       try {
         const data = JSON.parse(event.data)
         if (data.from === 'cusdis' && data.event === 'resize') {
-          // 设置iframe高度，额外添加空间以避免滚动条
-          const newHeight = parseInt(data.data) + 100
-          setIframeHeight(newHeight)
+          const iframe = document.querySelector('#cusdis_thread iframe')
+          if (iframe) {
+            // 设置更大的高度确保内容完全显示
+            const newHeight = parseInt(data.data) + 200
+            iframe.style.height = `${newHeight}px`
+            iframe.style.minHeight = '500px'
+          }
         }
       } catch (error) {
         // 忽略非JSON消息
@@ -50,84 +57,30 @@ const CusdisComponent = ({ frontMatter }) => {
     
     window.addEventListener('message', handleMessage)
     
-    // 使用ResizeObserver监控iframe大小变化
-    if (threadRef.current && !resizeObserverRef.current && 'ResizeObserver' in window) {
-      const setupResizeObserver = () => {
-        const iframe = threadRef.current?.querySelector('iframe')
-        if (iframe) {
-          resizeObserverRef.current = new ResizeObserver(entries => {
-            for (const entry of entries) {
-              const contentHeight = entry.contentRect.height
-              if (contentHeight > 0 && contentHeight !== iframeHeight) {
-                setIframeHeight(contentHeight + 100)
-              }
-            }
-          })
-          
-          resizeObserverRef.current.observe(iframe)
-        } else {
-          // 如果iframe还没加载，稍后再试
-          setTimeout(setupResizeObserver, 1000)
-        }
+    // 添加定时器检查并调整iframe
+    const checkIframe = setInterval(() => {
+      const iframe = document.querySelector('#cusdis_thread iframe')
+      if (iframe) {
+        iframe.style.width = '100%'
+        iframe.style.minHeight = '500px'
+        iframe.style.border = 'none'
+        iframe.style.overflow = 'visible'
       }
-      
-      // 延迟执行以确保iframe已加载
-      setTimeout(setupResizeObserver, 1000)
-    }
+    }, 1000)
     
     return () => {
       window.removeEventListener('message', handleMessage)
-      if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect()
-        resizeObserverRef.current = null
-      }
+      clearInterval(checkIframe)
+      // 不移除脚本，避免重复加载问题
     }
   }, [isDarkMode, lang, src, langCDN])
-  
-  // 监控iframe加载后应用样式
-  useEffect(() => {
-    if (!iframeLoaded) return
-    
-    const applyStyles = () => {
-      const iframe = threadRef.current?.querySelector('iframe')
-      if (iframe) {
-        // 设置iframe样式
-        iframe.style.width = '100%'
-        iframe.style.height = `${iframeHeight}px`
-        iframe.style.border = 'none'
-        iframe.style.overflow = 'visible'
-        iframe.style.transition = 'height 0.3s ease'
-        
-        // 尝试修改iframe内部样式
-        try {
-          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document
-          if (iframeDoc) {
-            const style = iframeDoc.createElement('style')
-            style.textContent = `
-              body { overflow: visible !important; }
-              .comment-container { max-height: none !important; }
-              .comments { max-height: none !important; }
-            `
-            iframeDoc.head.appendChild(style)
-          }
-        } catch (e) {
-          console.log('Cannot access iframe content due to same-origin policy')
-        }
-      } else {
-        // 如果iframe还没加载，稍后再试
-        setTimeout(applyStyles, 500)
-      }
-    }
-    
-    applyStyles()
-  }, [iframeLoaded, iframeHeight])
   
   return (
     <div 
       id="cusdis_thread"
       ref={threadRef}
       className="w-full overflow-visible"
-      style={{ minHeight: `${iframeHeight}px` }}
+      style={{ minHeight: '500px' }}
       lang={lang.toLowerCase()}
       data-host={siteConfig('COMMENT_CUSDIS_HOST')}
       data-app-id={siteConfig('COMMENT_CUSDIS_APP_ID')}
