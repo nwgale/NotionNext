@@ -23,6 +23,8 @@ const Comment = ({ frontMatter, className }) => {
   const COMMENT_VALINE_APP_ID = siteConfig('COMMENT_VALINE_APP_ID')
   const COMMENT_GISCUS_REPO = siteConfig('COMMENT_GISCUS_REPO')
   const COMMENT_CUSDIS_APP_ID = siteConfig('COMMENT_CUSDIS_APP_ID')
+  // 是否使用无iframe版本的Cusdis
+  const COMMENT_CUSDIS_NO_IFRAME = siteConfig('COMMENT_CUSDIS_NO_IFRAME', true)
   const COMMENT_UTTERRANCES_REPO = siteConfig('COMMENT_UTTERRANCES_REPO')
   const COMMENT_GITALK_CLIENT_ID = siteConfig('COMMENT_GITALK_CLIENT_ID')
   const COMMENT_WEBMENTION_ENABLE = siteConfig('COMMENT_WEBMENTION_ENABLE')
@@ -124,7 +126,11 @@ const Comment = ({ frontMatter, className }) => {
 
           {COMMENT_CUSDIS_APP_ID && (
             <div key='Cusdis'>
-              <CusdisComponent frontMatter={frontMatter} />
+              {COMMENT_CUSDIS_NO_IFRAME ? (
+                <CusdisNoIframeComponent frontMatter={frontMatter} />
+              ) : (
+                <CusdisComponent frontMatter={frontMatter} />
+              )}
             </div>
           )}
 
@@ -164,6 +170,13 @@ const WalineComponent = dynamic(
 const CusdisComponent = dynamic(
   () => {
     return import('@/components/CusdisComponent')
+  },
+  { ssr: false }
+)
+
+const CusdisNoIframeComponent = dynamic(
+  () => {
+    return import('@/components/CusdisNoIframe')
   },
   { ssr: false }
 )

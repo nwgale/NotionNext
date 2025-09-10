@@ -51,6 +51,7 @@ module.exports = {
     process.env.NEXT_PUBLIC_COMMENT_CUSDIS_HOST || 'https://cusdis.com', // data-host, change this if you're using self-hosted version
   COMMENT_CUSDIS_SCRIPT_SRC:
     process.env.NEXT_PUBLIC_COMMENT_CUSDIS_SCRIPT_SRC || 'https://cusdis.com/js/cusdis.es.js', // change this if you're using self-hosted version
+  COMMENT_CUSDIS_NO_IFRAME: process.env.NEXT_PUBLIC_COMMENT_CUSDIS_NO_IFRAME === 'false' ? false : true, // 是否使用无iframe版本的Cusdis评论组件，默认为true
 
   // gitalk评论插件 更多参考： https://gitalk.github.io/
   COMMENT_GITALK_REPO: process.env.NEXT_PUBLIC_COMMENT_GITALK_REPO || '', // 你的Github仓库名，例如 'NotionNext'
