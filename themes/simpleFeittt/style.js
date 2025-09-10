@@ -35,6 +35,25 @@ const Style = () => {
     margin-bottom: 0 !important;
   }
   
+  /* Cusdis评论区样式优化 */
+  #cusdis_thread {
+    width: 100% !important;
+    max-width: none !important;
+    overflow: visible !important;
+  }
+  
+  #cusdis_thread iframe {
+    width: 100% !important;
+    min-height: 300px !important;
+    max-width: none !important;
+  }
+  
+  /* 确保评论区容器不受限制 */
+  .comment {
+    width: 100% !important;
+    max-width: none !important;
+    overflow: visible !important;
+  }
   
   /*  菜单下划线动画 */
   #theme-simple .menu-link {
