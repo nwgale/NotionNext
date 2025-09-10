@@ -82,7 +82,11 @@ const BLOG = {
   
   // 规范链接配置
   CANONICAL_DOMAIN: process.env.NEXT_PUBLIC_CANONICAL_DOMAIN || 'https://tianfei.chat', // 规范链接的域名
-  IS_CANONICAL_HOST: process.env.NEXT_PUBLIC_IS_CANONICAL_HOST === 'true' // 是否为规范主机(阿里云)
+  IS_CANONICAL_HOST: process.env.NEXT_PUBLIC_IS_CANONICAL_HOST === 'true', // 是否为规范主机(阿里云)
+  
+  // 外部搜索配置
+  ENABLE_EXTERNAL_SEARCH: process.env.NEXT_PUBLIC_ENABLE_EXTERNAL_SEARCH || 'true', // 是否启用外部搜索引擎搜索
+  EXTERNAL_SEARCH_ENGINE: process.env.NEXT_PUBLIC_EXTERNAL_SEARCH_ENGINE || 'bing' // 外部搜索引擎，可选值：bing, google, baidu, sogou, 360
 }
 
 module.exports = BLOG

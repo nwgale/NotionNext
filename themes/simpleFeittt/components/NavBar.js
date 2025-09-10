@@ -1,8 +1,9 @@
 import { siteConfig } from '@/lib/config'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useSimpleGlobal } from '..'
 import { MenuList } from './MenuList'
+import ExternalSearchComponent from '@/components/ExternalSearchComponent'
 
 /**
  * 菜单导航
@@ -11,15 +12,28 @@ import { MenuList } from './MenuList'
  */
 export default function NavBar(props) {
   const [showSearchInput, changeShowSearchInput] = useState(false)
+  const [showExternalSearch, setShowExternalSearch] = useState(false)
   const router = useRouter()
   const { searchModal } = useSimpleGlobal()
+  const externalSearchRef = useRef(null)
 
   // 展示搜索框
   const toggleShowSearchInput = () => {
     if (siteConfig('ALGOLIA_APP_ID')) {
       searchModal.current.openSearch()
+    } else if (siteConfig('ENABLE_EXTERNAL_SEARCH') === 'true') {
+      // 使用外部搜索
+      setShowExternalSearch(!showExternalSearch)
+      changeShowSearchInput(false)
+      if (!showExternalSearch) {
+        setTimeout(() => {
+          externalSearchRef.current?.focus()
+        }, 100)
+      }
     } else {
+      // 使用原生搜索
       changeShowSearchInput(!showSearchInput)
+      setShowExternalSearch(false)
     }
   }
 
@@ -52,7 +66,16 @@ export default function NavBar(props) {
               placeholder='Type then hit enter to search...'
             />
           )}
-          {!showSearchInput && <MenuList {...props} />}
+          {showExternalSearch && (
+            <div className='float-left w-full h-full'>
+              <ExternalSearchComponent 
+                cRef={externalSearchRef}
+                className='h-full'
+                searchEngine={siteConfig('EXTERNAL_SEARCH_ENGINE') || 'bing'}
+              />
+            </div>
+          )}
+          {!showSearchInput && !showExternalSearch && <MenuList {...props} />}
         </div>
 
         <div className='absolute right-12 h-full text-center px-2 flex items-center text-blue-400  cursor-pointer'>
