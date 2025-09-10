@@ -46,9 +46,9 @@ jobs:
           NEXT_PUBLIC_CANONICAL_DOMAIN: 'https://tianfei.chat'
           NEXT_PUBLIC_IS_CANONICAL_HOST: 'true'
           # Cusdis评论系统配置 - 子路径部署
-          NEXT_PUBLIC_COMMENT_CUSDIS_APP_ID: '4a5927dd-3a26-4bb3-9712-99c8c97fabd6'
-          NEXT_PUBLIC_COMMENT_CUSDIS_HOST: 'https://tianfei.chat/comments'
-          NEXT_PUBLIC_COMMENT_CUSDIS_SCRIPT_SRC: 'https://tianfei.chat/comments/js/cusdis.es.js'
+          NEXT_PUBLIC_COMMENT_CUSDIS_APP_ID: '87827ee2-b949-4049-a820-f6eeba80bd37'
+          NEXT_PUBLIC_COMMENT_CUSDIS_HOST: 'https://cusdis.com'
+          NEXT_PUBLIC_COMMENT_CUSDIS_SCRIPT_SRC: 'https://cusdis.com/js/cusdis.es.js'
 
       # 5. Ensure target directory exists on remote server
       - name: Create target directory on remote server
