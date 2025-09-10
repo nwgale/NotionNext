@@ -45,9 +45,9 @@ const CusdisComponent = ({ frontMatter }) => {
           const iframe = document.querySelector('#cusdis_thread iframe')
           if (iframe) {
             // 只添加小的缓冲区，更接近官方实现
-            const newHeight = parseInt(data.data) + 50
+            const newHeight = Math.max(parseInt(data.data) + 50, 350)
             iframe.style.height = `${newHeight}px`
-            iframe.style.minHeight = '350px' // 降低最小高度
+            // 移除minHeight设置，让CSS处理
           }
         }
       } catch (error) {
@@ -83,9 +83,9 @@ const CusdisComponent = ({ frontMatter }) => {
       const iframe = document.querySelector('#cusdis_thread iframe')
       if (iframe) {
         iframe.style.width = '100%'
-        iframe.style.minHeight = '350px' // 降低最小高度
         iframe.style.border = 'none'
         iframe.style.overflow = 'visible'
+        // 移除minHeight设置，让CSS处理
       } else {
         // 如果还没加载完成，稍后再试
         setTimeout(initIframe, 500)
@@ -105,7 +105,6 @@ const CusdisComponent = ({ frontMatter }) => {
       id="cusdis_thread"
       ref={threadRef}
       className="w-full overflow-visible"
-      style={{ minHeight: '350px' }}
       lang={lang.toLowerCase()}
       data-host={siteConfig('COMMENT_CUSDIS_HOST')}
       data-app-id={siteConfig('COMMENT_CUSDIS_APP_ID')}

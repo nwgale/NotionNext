@@ -40,12 +40,12 @@ const Style = () => {
     width: 100% !important;
     max-width: none !important;
     overflow: visible !important;
-    min-height: 150px !important;
+    min-height: 350px !important;
   }
   
   #cusdis_thread iframe {
     width: 100% !important;
-    min-height: 150px !important;
+    min-height: 350px !important;
     max-width: none !important;
     border: none !important;
     height: auto !important;
@@ -68,7 +68,7 @@ const Style = () => {
   @media (max-width: 768px) {
     #cusdis_thread,
     #cusdis_thread iframe {
-      min-height: 200px !important;
+      min-height: 350px !important;
     }
   }
   
