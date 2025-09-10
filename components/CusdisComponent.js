@@ -44,10 +44,10 @@ const CusdisComponent = ({ frontMatter }) => {
         if (data.from === 'cusdis' && data.event === 'resize') {
           const iframe = document.querySelector('#cusdis_thread iframe')
           if (iframe) {
-            // 设置更大的高度确保内容完全显示
-            const newHeight = parseInt(data.data) + 200
+            // 只添加小的缓冲区，更接近官方实现
+            const newHeight = parseInt(data.data) + 50
             iframe.style.height = `${newHeight}px`
-            iframe.style.minHeight = '500px'
+            iframe.style.minHeight = '250px' // 降低最小高度
           }
         }
       } catch (error) {
@@ -57,21 +57,46 @@ const CusdisComponent = ({ frontMatter }) => {
     
     window.addEventListener('message', handleMessage)
     
-    // 添加定时器检查并调整iframe
-    const checkIframe = setInterval(() => {
+    // 使用MutationObserver监听评论区变化
+    const observer = new MutationObserver(() => {
+      const iframe = document.querySelector('#cusdis_thread iframe')
+      if (iframe && iframe.contentWindow) {
+        // 尝试触发重新计算高度
+        try {
+          iframe.contentWindow.postMessage('resize', '*')
+        } catch (e) {
+          // 忽略跨域错误
+        }
+      }
+    })
+    
+    // 监听评论区变化
+    if (threadRef.current) {
+      observer.observe(threadRef.current, {
+        childList: true,
+        subtree: true
+      })
+    }
+    
+    // 初始化时设置基础样式
+    const initIframe = () => {
       const iframe = document.querySelector('#cusdis_thread iframe')
       if (iframe) {
         iframe.style.width = '100%'
-        iframe.style.minHeight = '500px'
+        iframe.style.minHeight = '250px' // 降低最小高度
         iframe.style.border = 'none'
         iframe.style.overflow = 'visible'
+      } else {
+        // 如果还没加载完成，稍后再试
+        setTimeout(initIframe, 500)
       }
-    }, 1000)
+    }
+    
+    setTimeout(initIframe, 500)
     
     return () => {
       window.removeEventListener('message', handleMessage)
-      clearInterval(checkIframe)
-      // 不移除脚本，避免重复加载问题
+      observer.disconnect()
     }
   }, [isDarkMode, lang, src, langCDN])
   
@@ -80,7 +105,7 @@ const CusdisComponent = ({ frontMatter }) => {
       id="cusdis_thread"
       ref={threadRef}
       className="w-full overflow-visible"
-      style={{ minHeight: '500px' }}
+      style={{ minHeight: '250px' }}
       lang={lang.toLowerCase()}
       data-host={siteConfig('COMMENT_CUSDIS_HOST')}
       data-app-id={siteConfig('COMMENT_CUSDIS_APP_ID')}

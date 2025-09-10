@@ -35,17 +35,17 @@ const Style = () => {
     margin-bottom: 0 !important;
   }
   
-  /* Cusdis评论区样式优化 - 增强版 */
+  /* Cusdis评论区样式优化 - 精简版 */
   #cusdis_thread {
     width: 100% !important;
     max-width: none !important;
     overflow: visible !important;
-    min-height: 500px !important;
+    min-height: 150px !important;
   }
   
   #cusdis_thread iframe {
     width: 100% !important;
-    min-height: 500px !important;
+    min-height: 150px !important;
     max-width: none !important;
     border: none !important;
     height: auto !important;
@@ -56,7 +56,7 @@ const Style = () => {
     width: 100% !important;
     max-width: none !important;
     overflow: visible !important;
-    min-height: 500px !important;
+    min-height: auto !important;
   }
   
   /* 添加全局样式以强制iframe内容可见 */
@@ -64,12 +64,11 @@ const Style = () => {
     overflow: visible !important;
   }
   
-  /* 确保评论区在所有设备上都能完全显示 */
+  /* 移动端优化 */
   @media (max-width: 768px) {
     #cusdis_thread,
-    #cusdis_thread iframe,
-    .comment {
-      min-height: 600px !important;
+    #cusdis_thread iframe {
+      min-height: 200px !important;
     }
   }
   
