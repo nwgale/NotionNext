@@ -47,7 +47,7 @@ const CusdisComponent = ({ frontMatter }) => {
             // 只添加小的缓冲区，更接近官方实现
             const newHeight = parseInt(data.data) + 50
             iframe.style.height = `${newHeight}px`
-            iframe.style.minHeight = '250px' // 降低最小高度
+            iframe.style.minHeight = '350px' // 降低最小高度
           }
         }
       } catch (error) {
@@ -83,7 +83,7 @@ const CusdisComponent = ({ frontMatter }) => {
       const iframe = document.querySelector('#cusdis_thread iframe')
       if (iframe) {
         iframe.style.width = '100%'
-        iframe.style.minHeight = '250px' // 降低最小高度
+        iframe.style.minHeight = '350px' // 降低最小高度
         iframe.style.border = 'none'
         iframe.style.overflow = 'visible'
       } else {
@@ -105,7 +105,7 @@ const CusdisComponent = ({ frontMatter }) => {
       id="cusdis_thread"
       ref={threadRef}
       className="w-full overflow-visible"
-      style={{ minHeight: '250px' }}
+      style={{ minHeight: '350px' }}
       lang={lang.toLowerCase()}
       data-host={siteConfig('COMMENT_CUSDIS_HOST')}
       data-app-id={siteConfig('COMMENT_CUSDIS_APP_ID')}
