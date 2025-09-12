@@ -1,5 +1,5 @@
 import { siteConfig } from '@/lib/config'
-import twikoo from 'twikoo'
+// import twikoo from 'twikoo'
 
 /**
  * 获取博客的评论数，用与在列表中展示
