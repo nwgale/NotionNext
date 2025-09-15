@@ -12,6 +12,7 @@ import { createContext, useContext, useEffect, useRef } from 'react'
 import BlogPostBar from './components/BlogPostBar'
 import CONFIG from './config'
 import { Style } from './style'
+import Script from 'next/script'
 
 const AlgoliaSearchModal = dynamic(
   () => import('@/components/AlgoliaSearchModal'),
@@ -83,6 +84,18 @@ const LayoutBase = props => {
 
   return (
     <ThemeGlobalSimple.Provider value={{ searchModal }}>
+      {/* Baidu Analytics */}
+      <Script id="baidu-analytics" strategy="afterInteractive">
+        {`
+          var _hmt = _hmt || [];
+          (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?b7498a86dfa7172a596b43d10aa55105";
+            var s = document.getElementsByTagName("script")[0]; 
+            s.parentNode.insertBefore(hm, s);
+          })();
+        `}
+      </Script>
       <div
         id='theme-simple'
         className={`${siteConfig('FONT_STYLE')} min-h-screen flex flex-col dark:text-gray-300  bg-white dark:bg-black scroll-smooth`}>
