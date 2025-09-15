@@ -49,6 +49,8 @@ jobs:
           NEXT_PUBLIC_COMMENT_CUSDIS_APP_ID: '87827ee2-b949-4049-a820-f6eeba80bd37'
           NEXT_PUBLIC_COMMENT_CUSDIS_HOST: 'https://cusdis.com'
           NEXT_PUBLIC_COMMENT_CUSDIS_SCRIPT_SRC: 'https://cusdis.com/js/cusdis.es.js'
+          # 站点URL，用于生成sitemap等绝对路径
+          NEXT_PUBLIC_LINK: 'https://tianfei.chat'
 
       # 5. Ensure target directory exists on remote server
       - name: Create target directory on remote server
