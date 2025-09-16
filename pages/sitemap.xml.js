@@ -28,7 +28,10 @@ export const getServerSideProps = async ctx => {
 
     // 将网站的额外子目录/app/增加到sitemap，这些目录数据由作者自行添加到Notion配置中心APP_LIST_FOR_SITEMAP字段
     const appListString = siteConfig('APP_LIST_FOR_SITEMAP', '', siteData.NOTION_CONFIG)
-    console.error('[Debug Sitemap] APP_LIST_FOR_SITEMAP from Notion:', appListString)
+    if (!appListString) {
+      throw new Error('[Debug Sitemap] FAILED: The value for APP_LIST_FOR_SITEMAP from Notion is empty or not found!')
+    }
+    console.error('[Debug Sitemap] SUCCESS: APP_LIST_FOR_SITEMAP from Notion:', appListString)
     if (appListString) {
       const appPaths = appListString.split('\n').filter(p => p && p.trim() !== '')
       const dateNow = new Date().toISOString().split('T')[0]
