@@ -8,6 +8,11 @@ on:
       - main
   # Allow manual triggering of the workflow
   workflow_dispatch:
+    inputs:
+      use_cache:
+        description: 'Use Notion cache (true/false)'
+        required: true
+        default: 'true'
   # Automatically run every 6 hours to sync content from Notion
   schedule:
     - cron: '0 */6 * * *'  # Runs at minute 0 of every 6th hour (0:00, 6:00, 12:00, 18:00 UTC)
@@ -37,6 +42,8 @@ jobs:
         env:
           # This environment variable is crucial for the static export build
           EXPORT: true
+          # Control whether to use Notion cache, value comes from manual trigger input
+          NOTION_USE_CACHE: ${{ github.event.inputs.use_cache || 'true' }}
           # Notion Page ID - this should be set in your GitHub repository secrets
           NOTION_PAGE_ID: ${{ secrets.NOTION_PAGE_ID }}
           # Other important environment variables from your Vercel deployment
@@ -55,7 +62,7 @@ jobs:
       # 5. Ensure target directory exists on remote server
       - name: Create target directory on remote server
         uses: appleboy/ssh-action@v1.0.3
-        with:
+        wit
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_SSH_KEY }}
