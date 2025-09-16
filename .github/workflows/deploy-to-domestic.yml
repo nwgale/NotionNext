@@ -13,6 +13,10 @@ on:
         description: 'Use Notion cache (true/false)'
         required: true
         default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
   # Automatically run every 6 hours to sync content from Notion
   schedule:
     - cron: '0 */6 * * *'  # Runs at minute 0 of every 6th hour (0:00, 6:00, 12:00, 18:00 UTC)
@@ -62,7 +66,7 @@ jobs:
       # 5. Ensure target directory exists on remote server
       - name: Create target directory on remote server
         uses: appleboy/ssh-action@v1.0.3
-        wit
+        with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_SSH_KEY }}
