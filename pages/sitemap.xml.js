@@ -25,9 +25,25 @@ export const getServerSideProps = async ctx => {
     )
     const localeFields = generateLocalesSitemap(link, siteData.allPages, locale)
     fields = fields.concat(localeFields)
+
+    // 将网站的额外子目录/app/增加到sitemap，这些目录数据由作者自行添加到Notion配置中心APP_LIST_FOR_SITEMAP字段
+    const appListString = siteConfig('APP_LIST_FOR_SITEMAP', '', siteData.NOTION_CONFIG)
+    if (appListString) {
+      const appPaths = appListString.split('\n').filter(p => p && p.trim() !== '')
+      const dateNow = new Date().toISOString().split('T')[0]
+      const appFields = appPaths.map(path => {
+        return {
+          loc: `${link}${path.trim()}`,
+          lastmod: dateNow,
+          changefreq: 'daily',
+          priority: '0.7'
+        }
+      })
+      fields = fields.concat(appFields)
+    }
   }
 
-  fields = getUniqueFields(fields);
+  fields = getUniqueFields(fields)
 
   // 缓存
   ctx.res.setHeader(
