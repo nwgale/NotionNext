@@ -19,8 +19,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "post-build": "next-sitemap --config next-sitemap.config.js",
-    "export": "node scripts/generate-sitemap-paths.js && cross-env EXPORT=true next build && next-sitemap --config next-sitemap.config.js",
+    "sitemap": "node scripts/generate-sitemap-paths.js && next-sitemap --config next-sitemap.config.js",
+    "post-build": "npm run sitemap",
+    "export": "cross-env EXPORT=true next build && npm run sitemap",
     "bundle-report": "cross-env ANALYZE=true next build",
     "build-all-in-dev": "cross-env VERCEL_ENV=production next build",
     "version": "echo $npm_package_version"
