@@ -52,6 +52,12 @@ jobs:
           # 站点URL，用于生成sitemap等绝对路径
           NEXT_PUBLIC_LINK: 'https://tianfei.chat'
 
+      - name: 🕵️ Check FINAL Sitemap Content in out/ folder
+        run: |
+          echo "--- Checking content of out/sitemap.xml ---"
+          cat out/sitemap.xml
+          echo "--- End of sitemap.xml content ---"
+
       # 5. Ensure target directory exists on remote server
       - name: Create target directory on remote server
         uses: appleboy/ssh-action@v1.0.3
