@@ -38,7 +38,7 @@
     *   **验证方法**: 将代码通过GitHub Desktop同步并部署。
     *   **此时的预期行为**:
         1.  部署成功后，访问 `https://tianfei.chat/sitemap.xml`，页面应成功加载一个XML文件。
-        2.  该XML文件的内容应只包含由 `next-sitemap` 自动扫描到的Notion文章等页面路径。这证明了静态方案已完全接管，且处于一个干净的“基准状态”。
+        2.  该XML文件的内容应只包含由 `next-sitemap` 自动扫描到的Notion文章等页面路径。这证明了静态方案已完全接管，且处于一个干净的“基准状态”。。
         3.vercel的网址是https://blogtianfei.vercel.app/，所以对应的sitemap是https://blogtianfei.vercel.app/sitemap.xml 能看到与tainfei.chat一样的内容
 
 ### 第 2 阶段：验证核心功能 (硬编码测试)
