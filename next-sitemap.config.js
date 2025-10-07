@@ -12,13 +12,6 @@ module.exports = {
   // ...other options
   // https://github.com/iamvishnusankar/next-sitemap#configuration-options
 
-  // 添加额外路径
-  additionalPaths: async (config) => {
-    const additional = [
-      await config.transform(config, '/test-1'),
-      await config.transform(config, '/test-2')
-    ]
-    console.log('[PM-CHECK-SITEMAP] Preparing to add additional paths:', JSON.stringify(additional, null, 2))
-    return additional
-  },
+  // 添加额外路径 (简化测试)
+  additionalPaths: ['/test-1', '/test-2'],
 }
