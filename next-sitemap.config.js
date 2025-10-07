@@ -9,15 +9,17 @@ module.exports = {
   priority: 0.7,
   generateRobotsTxt: true,
   sitemapSize: 7000,
+  sitemapName: 'sitemap-next.xml', // 指定中间文件名
   // ...other options
   // https://github.com/iamvishnusankar/next-sitemap#configuration-options
 
-  // 添加额外路径 (终极简化测试)
-  additionalPaths: async (config) => {
-    console.log('[PM-CHECK-SITEMAP] Returning a simple array of strings from the function.');
-    return [
-      '/test-1',
-      '/test-2',
-    ];
-  },
+  // additionalPaths a function to generate paths on the fly.
+  //   additionalPaths: async (config) => {
+  //   //   // Add logic here to fetch paths from other sources.
+  //   //   const paths = await fetch('https://.../posts')
+  //   //   return paths.map((post) => ({
+  //   //     loc: `/posts/${post.slug}`,
+  //   //     lastmod: post.updatedAt,
+  //   //   }))
+  //   // },
 }
