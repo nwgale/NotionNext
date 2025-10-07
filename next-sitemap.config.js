@@ -9,7 +9,7 @@ module.exports = {
   priority: 0.7,
   generateRobotsTxt: true,
   sitemapSize: 7000,
-  sitemapName: 'sitemap-next.xml', // 指定中间文件名
+  sitemapBaseFileName: 'sitemap-next', // 指定中间文件基础名
   // ...other options
   // https://github.com/iamvishnusankar/next-sitemap#configuration-options
 

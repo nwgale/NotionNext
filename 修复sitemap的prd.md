@@ -40,7 +40,7 @@
 **目标**: 配置 `next-sitemap`，使其恢复默认行为，仅作为“内部路径扫描器”，并将结果输出到一个临时的中间文件。
 
 *   **开发动作**:
-    1.  **[修改]** 修改 `next-sitemap.config.js`，移除 `additionalPaths`，并增加 `sitemapName` 选项，将输出文件名指定为 `sitemap-next.xml`。
+    1.  **[修改]** 修改 `next-sitemap.config.js`，移除 `additionalPaths`，并增加 `sitemapBaseFileName` 选项，将输出文件名指定为 `sitemap-next`。
         ```javascript
         // next-sitemap.config.js (示例)
         module.exports = {
@@ -48,7 +48,7 @@
           changefreq: 'daily',
           priority: 0.7,
           generateRobotsTxt: true,
-          sitemapName: 'sitemap-next.xml' // 指定中间文件名
+          sitemapBaseFileName: 'sitemap-next', // 指定中间文件基础名
           // ... 其他基础配置, 确保没有 additionalPaths
         }
         ```
