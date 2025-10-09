@@ -38,18 +38,24 @@ async function mergeSitemaps() {
     }) || [];
     console.log(`[merge-sitemap] Found and processed ${internalUrls.length} internal URLs.`);
 
-    // 2. Fetch external paths
+    // 2. Fetch and process external paths
     console.log(`[merge-sitemap] Fetching external paths from ${EXTERNAL_PATHS_URL}`);
     const response = await axios.get(EXTERNAL_PATHS_URL);
     const externalPathsText = response.data;
-    const externalRelativePaths = externalPathsText.split('\n').filter(p => p.trim() !== '' && !p.startsWith('#'));
-    const externalUrls = externalRelativePaths.map(path => ({
-      url: path, // Already a relative path
-      changefreq: 'daily',
-      priority: 0.7,
-      lastmod: new Date().toISOString().split('T')[0],
-    }));
-    console.log(`[merge-sitemap] Found ${externalUrls.length} external URLs.`);
+    const externalLines = externalPathsText.split('\n').filter(p => p.trim() !== '' && !p.startsWith('#'));
+
+    const externalUrls = externalLines.map(line => {
+      const [path, lastmod] = line.split('|');
+      // The new format is path|lastmod_iso_string.
+      // We use the provided lastmod for better SEO.
+      return {
+        url: path,
+        changefreq: 'daily',
+        priority: 0.7,
+        lastmod, // Directly use the ISO 8601 date string from the file
+      };
+    });
+    console.log(`[merge-sitemap] Found and processed ${externalUrls.length} external URLs.`);
 
     // 3. Merge URLs
     const allUrls = [...internalUrls, ...externalUrls];
