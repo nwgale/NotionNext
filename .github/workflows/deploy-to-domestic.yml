@@ -37,9 +37,9 @@ jobs:
           echo "Executing build commands directly with npx..."
           npx next build
           npx next-sitemap --config next-sitemap.config.js
-          echo "--- Listing files in 'out' directory after next-sitemap ---"
-          ls -R out
-          echo "--- End of file list ---"
+          echo "--- Listing all .xml files in 'out' directory after next-sitemap ---"
+          find out -name "*.xml"
+          echo "--- End of .xml file list ---"
           node scripts/merge-sitemap.js
         env:
           # This environment variable is crucial for the static export build
