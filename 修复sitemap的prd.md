@@ -1,10 +1,8 @@
-# Sitemap 统一方案规划 (PRD) - V2
+# Sitemap 统一方案规划 (PRD) - V3
 
 ## 1. 需求总结/功能目标
 
-本次任务的核心目标是**修复并统一Sitemap的生成机制**。最终，网站管理员在外部 `sitemap-paths.txt` 文件中维护的URL列表，能够在项目部署后，自动、可靠地出现在最终的 `sitemap.xml` 文件中。
-
-为了优化SEO效果，外部URL列表将提供精确到秒的最后修改时间（`lastmod`），Sitemap生成时必须采用此具体时间。
+本次任务的核心目标是**修复并统一Sitemap的生成机制**，并**全面优化SEO效果**。最终，无论是内部文章还是外部URL，其精确的最后修改时间（`lastmod`）都能自动、可靠地出现在最终的 `sitemap.xml` 文件中。
 
 ## 2. 技术背景/环境依赖
 
@@ -41,17 +39,32 @@ node scripts/merge-sitemap.js
 
 ---
 
-### **第 1 步：生成初始 Sitemap (由 `next-sitemap` 完成)**
+### **第 1 步：生成精确的时间地图 (在 `next build` 内部实现)**
 
-*   **目标**: 利用 `next-sitemap` 扫描项目内所有页面（如Notion文章），生成一个只包含内部路径的 `sitemap.xml` 文件。
+*   **核心思想**: 采用“**构建时缓存**”策略。在 `next build` 阶段，当所有文章数据从Notion API被一次性拉取后，立即将“路径到精确修改时间”的映射关系写入一个临时的JSON缓存文件。
+*   **目标**: 在 `lib/notion/getAllPosts.js` (或类似核心数据文件) 中，生成一个包含所有内部文章精确修改时间的缓存文件。
 *   **动作**:
-    1.  执行 `npx next-sitemap` 命令。
-    2.  `next-sitemap.config.js` 中不包含任何 `additionalPaths` 或 `sitemapBaseFileName` 等复杂配置，保持其核心功能纯粹。
-*   **产物**: 在 `out/` 目录下生成一个 `sitemap.xml` 文件。此时，这个文件仅作为下一步的输入，是一个**中间产物**。
+    1.  在 `getAllPosts.js` 文件末尾，当所有文章数据（`allPosts`）都已处理完毕后，遍历该列表。
+    2.  创建一个简单的 `路径: 精确时间` 映射对象。
+    3.  使用 `fs` 模块，将此对象序列化并同步写入到临时文件 `.next/lastmod-map.json` 中。
+*   **产物**: 在构建过程中，`.next/` 目录下会生成一个 `lastmod-map.json` 文件。
 
 ---
 
-### **第 2 步：合并外部路径并生成最终 Sitemap (由 `scripts/merge-sitemap.js` 完成)**
+### **第 2 步：生成包含精确时间的初始 Sitemap (由 `next-sitemap` 完成)**
+
+*   **核心思想**: 采用“**转换时读取**”策略。利用 `next-sitemap` 强大的 `transform` 功能，高效地从上一步生成的缓存文件中读取时间数据。
+*   **目标**: 利用 `next-sitemap` 和时间地图，生成一个包含**精确 `lastmod` 时间**的、只含内部路径的 `sitemap.xml` 文件。
+*   **动作**:
+    1.  修改 `next-sitemap.config.js` 文件。
+    2.  在文件顶部，读取并解析 `.next/lastmod-map.json` 文件，将其内容加载到内存变量 `lastmodMap` 中。
+    3.  实现 `transform` 函数：对于每个页面路径 `path`，从 `lastmodMap` 中查找对应的时间，并将其作为 `lastmod` 值返回。
+    4.  执行 `npx next-sitemap` 命令。
+*   **产物**: 在 `out/` 目录下生成一个 `sitemap.xml` 文件。此时，该文件已包含精确的内部页面时间，并作为下一步的**中间产物**。
+
+---
+
+### **第 3 步：合并外部路径并生成最终 Sitemap (由 `scripts/merge-sitemap.js` 完成)**
 
 *   **目标**: 读取上一步生成的 `sitemap.xml`，解析并合并 `sitemap-paths.txt` 中的外部路径及其精确时间，最终生成完整的 `sitemap.xml`。
 *   **动作**:
@@ -68,5 +81,5 @@ node scripts/merge-sitemap.js
     *   **验证方法**: 部署后，访问 `https://tianfei.chat/sitemap.xml`。
     *   **预期行为**:
         1.  最终的 `sitemap.xml` 文件必须同时包含项目内部路径和 `sitemap-paths.txt` 中定义的所有外部路径。
-        2.  外部路径的 `<lastmod>` 标签内容必须与 `sitemap-paths.txt` 中提供的日期完全一致。
+        2.  **无论是内部路径还是外部路径，其 `<lastmod>` 标签都必须包含精确到时分秒的时间信息。**
         3.  整个流程无差错，部署成功。
