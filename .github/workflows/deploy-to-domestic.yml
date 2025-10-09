@@ -33,7 +33,11 @@ jobs:
 
       # 4. Build the static site with Notion API credentials
       - name: Build static files
-        run: npm run export
+        run: |
+          echo "--- DEBUG: Checking environment variable ---"
+          echo "API_BASE_URL is: $API_BASE_URL"
+          echo "------------------------------------------"
+          npm run export
         env:
           # This environment variable is crucial for the static export build
           EXPORT: true
