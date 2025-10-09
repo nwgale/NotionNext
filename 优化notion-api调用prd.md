@@ -43,7 +43,7 @@
 1.  **第一次**调用 `getGlobalData` 时，发现“水缸”是空的。
 2.  执行完整的取水流程（请求 Notion API），获取所有网站数据。
 3.  将这桶完整的数据**倒入“水缸”**（存入全局缓存）。
-4.  **后续所有**对 `getGlobalData` 的调用，都直接从“水缸”里取水，不再去远方的 Notion API。
+4.  **后续所有**对 `getGlobalData` 的调用，都直 接从“水缸”里取水，不再去远方的 Notion API。
 
 ### 实施步骤 (Implementation Steps)
 
