@@ -34,9 +34,9 @@ jobs:
       # 4. Build the static site with Notion API credentials
       - name: Build static files
         run: |
-          echo "Executing build commands directly..."
-          next build
-          next-sitemap --config next-sitemap.config.js
+          echo "Executing build commands directly with npx..."
+          npx next build
+          npx next-sitemap --config next-sitemap.config.js
           node scripts/merge-sitemap.js
         env:
           # This environment variable is crucial for the static export build
