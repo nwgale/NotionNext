@@ -51,6 +51,8 @@ jobs:
           NEXT_PUBLIC_COMMENT_CUSDIS_SCRIPT_SRC: 'https://cusdis.com/js/cusdis.es.js'
           # 站点URL，用于生成sitemap等绝对路径
           NEXT_PUBLIC_LINK: 'https://tianfei.chat'
+          # 备用Notion API地址
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
 
       - name: 🕵️ Check FINAL Sitemap Content in out/ folder
         run: |
