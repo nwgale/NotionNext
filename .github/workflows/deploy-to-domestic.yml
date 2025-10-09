@@ -33,10 +33,16 @@ jobs:
 
       # 4. Build the static site with Notion API credentials
       - name: Build static files
-        run: API_BASE_URL=${{ secrets.API_BASE_URL }} npm run export
+        run: |
+          echo "Executing build commands directly..."
+          next build
+          next-sitemap --config next-sitemap.config.js
+          node scripts/merge-sitemap.js
         env:
           # This environment variable is crucial for the static export build
           EXPORT: true
+          # 备用Notion API地址
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
           # Notion Page ID - this should be set in your GitHub repository secrets
           NOTION_PAGE_ID: ${{ secrets.NOTION_PAGE_ID }}
           # Other important environment variables from your Vercel deployment
