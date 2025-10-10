@@ -37,10 +37,10 @@ module.exports = {
   // The transform function allows us to customize the sitemap entries.
   // We use it here to inject the precise `lastmod` time for each post.
   transform: async (config, path) => {
-    // Remove leading slash, e.g., '/post-slug' -> 'post-slug'
-    const key = path.slice(1)
-    const lastmodTimestamp = lastmodMap[key]
-    // Use the lastmod from the map if it exists, otherwise fall back to the current date.
+    // Use the path directly as the key, as it matches the `href` property used to build the map.
+    const lastmodTimestamp = lastmodMap[path]
+
+    // Use the precise lastmod if found, otherwise fall back to the current date.
     const lastmod = lastmodTimestamp
       ? new Date(lastmodTimestamp).toISOString()
       : new Date().toISOString()
@@ -49,7 +49,7 @@ module.exports = {
       loc: path, // => this will be exported as http://<link>/<path>
       changefreq: config.changefreq,
       priority: config.priority,
-      lastmod, // Use the precise lastmod.
+      lastmod,
       alternateRefs: config.alternateRefs ?? []
     }
   }
