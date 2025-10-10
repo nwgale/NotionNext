@@ -13,10 +13,15 @@ const getLastmodMap = () => {
     const filePath = path.join(os.tmpdir(), 'notion-next-lastmod-map.json')
     if (fs.existsSync(filePath)) {
       console.log('[Sitemap] Found lastmod-map.json from temp directory.')
-      return JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+      const fileContent = fs.readFileSync(filePath, 'utf-8')
+      // Add detailed logging to inspect the content
+      console.log('[Sitemap Debug] Raw file content:', fileContent)
+      const parsedMap = JSON.parse(fileContent)
+      console.log('[Sitemap Debug] Parsed map object keys (first 5):', Object.keys(parsedMap).slice(0, 5))
+      return parsedMap
     }
   } catch (e) {
-    console.warn('[Sitemap] Failed to read lastmod-map.json, will use default dates.', e)
+    console.warn('[Sitemap] Failed to read or parse lastmod-map.json, will use default dates.', e)
   }
   console.log('[Sitemap] lastmod-map.json not found in temp directory, using default dates.')
   return {}
