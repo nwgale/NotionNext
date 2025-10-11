@@ -105,3 +105,6 @@ node scripts/merge-sitemap.js
         1.  最终的 `sitemap.xml` 文件必须同时包含项目内部路径和 `sitemap-paths.txt` 中定义的所有外部路径。
         2.  **无论是内部路径还是外部路径，其 `<lastmod>` 标签都必须包含精确到时分秒的时间信息。**
         3.  整个流程无差错，部署成功。
+
+
+这是对sitemap的完整优化

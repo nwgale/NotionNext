@@ -88,10 +88,27 @@ async function mergeSitemaps() {
     console.log(`[Worker D - Assembler] Found ${externalUrls.length} external pages.`);
 
     // 2. Assemble final list
-    const finalUrlList = [...correctedDraft, ...externalUrls];
-    console.log(`[Worker D - Assembler] Assembly complete. Total pages: ${finalUrlList.length}.`);
+    const combinedList = [...correctedDraft, ...externalUrls];
+    console.log(`[Worker D - Assembler] Combined list has ${combinedList.length} URLs before cleaning.`);
 
-    // 3. Publish the final product
+    // 3. Clean and deduplicate the list
+    const seenUrls = new Set();
+    const finalUrlList = combinedList.filter(item => {
+        // Basic validation: must be a relative path starting with '/'
+        if (!item.url || !item.url.startsWith('/')) {
+            console.warn(`[Worker D - Assembler] Filtering out malformed URL: ${item.url}`);
+            return false;
+        }
+        if (seenUrls.has(item.url)) {
+            console.log(`[Worker D - Assembler] Filtering out duplicate URL: ${item.url}`);
+            return false;
+        }
+        seenUrls.add(item.url);
+        return true;
+    });
+    console.log(`[Worker D - Assembler] Cleaning complete. Final unique URL count: ${finalUrlList.length}.`);
+
+    // 4. Publish the final product
     const finalSitemapXml = await generateSitemapXml(finalUrlList);
     await fs.writeFile(SITEMAP_PATH, finalSitemapXml);
     console.log(`[Sitemap-Pipeline] Finished! The final sitemap has been published to ${SITEMAP_PATH}.`);
