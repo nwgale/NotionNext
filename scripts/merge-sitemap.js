@@ -94,8 +94,8 @@ async function mergeSitemaps() {
     // 3. Clean and deduplicate the list
     const seenUrls = new Set();
     const finalUrlList = combinedList.filter(item => {
-        // Basic validation: must be a relative path starting with '/'
-        if (!item.url || !item.url.startsWith('/')) {
+        // Stricter validation: must be a relative path starting with '/' and not containing a protocol.
+        if (!item.url || !item.url.startsWith('/') || item.url.includes('://')) {
             console.warn(`[Worker D - Assembler] Filtering out malformed URL: ${item.url}`);
             return false;
         }
