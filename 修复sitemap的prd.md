@@ -15,7 +15,10 @@
     *   **验证渠道**:
         1.  **过程**: Vercel 构建日志 (Build Logs)。
         2.  **结果**: 访问国内域名 `https://tianfei.chat/sitemap.xml`。
-*   **核心问题**: 经过多轮测试，已确认 `next-sitemap` 库的 `additionalPaths` 功能存在缺陷。**此外，其 `sitemapBaseFileName` 配置选项在我们的构建环境中仅在日志中生效，实际生成的文件名始终为 `sitemap.xml`，此行为已被验证并接纳为流程的一部分。**
+*   **核心问题**: 经过多轮测试，已确认 `next-sitemap` 库存在两个核心问题：
+    1.  **功能缺陷**: 其 `additionalPaths` 功能不可靠。
+    2.  **数据截断**: 在我们的构建环境中，它会将其 `transform` 函数提供的完整 ISO 格式时间戳 (`...T15:32:02.900Z`) **截断为仅日期格式** (`...`)，导致 `lastmod` 信息严重失真。
+*   **既定事实**: `next-sitemap` 生成的中间文件名始终为 `sitemap.xml`，此行为已被接纳为流程的一部分。
 *   **外部路径源文件 (`sitemap-paths.txt`) 格式**: 文件格式已变更为 `[路径]|[ISO 8601格式日期]`，例如 `/app/app2/|2025-09-30T21:22:25+08:00`，以便为每个外部URL提供精确的 `lastmod` 时间。
 
 ## 3. 核心原则
@@ -28,7 +31,17 @@
 
 ## 4. 最终实施方案
 
-**核心思想**: 采用“管道（Pipeline）”模式。我们利用 `next-sitemap` 作为“内部路径扫描器”，生成一个包含内部页面的初始版 `sitemap.xml`。然后，我们自己的脚本接管这个文件，将其作为“中间产物”，在其中混入包含精确时间的外部路径，最后**覆盖写回**同名文件，完成整个流程。
+**核心思想**: 采用“**信任链（Chain of Trust）**”模式。我们将 `next-sitemap` 的角色降级，仅将其用作一个不可靠但必要的**“路径扫描器”**。我们自己的脚本 (`scripts/merge-sitemap.js`) 则作为**“最终校准与合并中心”**，拥有对 `lastmod` 数据的最终决定权。
+
+工人A (档案员) 加载可信的时间戳。
+工人B (检验员) 提取 next-sitemap 的草稿中的路径，并丢弃错误数据。
+工人C (校准员) 使用档案员的数据修正时间戳。
+工人D (总装员) 合并内外路径，生成最终成品。
+
+**流程概述**:
+1.  `next build` 生成我们自己的、100%可信的时间戳缓存 (`lastmod-map.json`)。
+2.  `next-sitemap` 扫描项目，生成一个包含所有内部路径、但 `lastmod` **时间戳错误**的中间 `sitemap.xml`。
+3.  `scripts/merge-sitemap.js` 接管，**忽略**中间文件的错误时间戳，从我们自己的缓存中读取正确时间，并与外部路径合并，生成最终的、完全正确的 `sitemap.xml`。
 
 **执行流程 (在 `.github/workflows/deploy-to-domestic.yml` 中定义):**
 ```bash
@@ -39,43 +52,52 @@ node scripts/merge-sitemap.js
 
 ---
 
-### **第 1 步：生成精确的时间地图 (在 `next build` 内部实现)**
+### **第 1 步：生成可信的时间戳缓存 (在 `next build` 内部实现)**
 
-*   **核心思想**: 采用“**构建时缓存**”策略。在 `next build` 阶段，当所有文章数据从Notion API被一次性拉取后，立即将“路径到精确修改时间”的映射关系写入一个临时的JSON缓存文件。
-*   **目标**: 在 `lib/notion/getAllPosts.js` (或类似核心数据文件) 中，生成一个包含所有内部文章精确修改时间的缓存文件。
+*   **核心思想**: 采用“**构建时合并缓存**”策略。由于 `next build` 会多次调用数据获取函数，我们必须确保每次调用都**追加**而不是**覆盖**缓存。
+*   **目标**: 在 `lib/db/getSiteData.js` 中，生成一个**完整且可信的** `lastmod-map.json` 文件，作为 `lastmod` 数据的唯一真实来源。
 *   **动作**:
-    1.  在 `getAllPosts.js` 文件末尾，当所有文章数据（`allPosts`）都已处理完毕后，遍历该列表。
-    2.  创建一个简单的 `路径: 精确时间` 映射对象。
-    3.  使用 `fs` 模块，将此对象序列化并同步写入到临时文件 `.next/lastmod-map.json` 中。
-*   **产物**: 在构建过程中，`.next/` 目录下会生成一个 `lastmod-map.json` 文件。
+    1.  在 `getSiteData.js` 的 `handleDataBeforeReturn` 函数内，每次执行时：
+    2.  首先**读取**已存在的 `.next/cache/lastmod-map.json` 文件（如果存在）。
+    3.  然后为当前批次的页面创建新的时间戳映射。
+    4.  将新的映射**合并**到已读取的旧映射中。
+    5.  将合并后的完整映射**写回**到 `.next/cache/lastmod-map.json`。
+*   **产物**: 在构建过程中，`.next/cache/` 目录下生成一个 `lastmod-map.json` 文件，包含所有页面的精确 `lastmod` 时间戳。
 
 ---
 
-### **第 2 步：生成包含精确时间的初始 Sitemap (由 `next-sitemap` 完成)**
+### **第 2 步：利用 `next-sitemap` 扫描内部路径**
 
-*   **核心思想**: 采用“**转换时读取**”策略。利用 `next-sitemap` 强大的 `transform` 功能，高效地从上一步生成的缓存文件中读取时间数据。
-*   **目标**: 利用 `next-sitemap` 和时间地图，生成一个包含**精确 `lastmod` 时间**的、只含内部路径的 `sitemap.xml` 文件。
+*   **核心思想**: **角色降级**。将 `next-sitemap` 严格限定为一个**“路径扫描器”**，不再信任其任何数据处理能力。
+*   **目标**: 生成一个仅用于提供**内部 URL 列表**的中间 `sitemap.xml` 文件。
 *   **动作**:
-    1.  修改 `next-sitemap.config.js` 文件。
-    2.  在文件顶部，读取并解析 `.next/lastmod-map.json` 文件，将其内容加载到内存变量 `lastmodMap` 中。
-    3.  实现 `transform` 函数：对于每个页面路径 `path`，从 `lastmodMap` 中查找对应的时间，并将其作为 `lastmod` 值返回。
-    4.  执行 `npx next-sitemap` 命令。
-*   **产物**: 在 `out/` 目录下生成一个 `sitemap.xml` 文件。此时，该文件已包含精确的内部页面时间，并作为下一步的**中间产物**。
+    1.  执行 `npx next-sitemap` 命令。
+    2.  `next-sitemap` 会自动扫描项目结构，并生成一个 `sitemap.xml`。
+*   **产物**: 在 `out/` 目录下生成一个 `sitemap.xml` 文件。**我们明确知道此文件中的 `<lastmod>` 标签是错误的、被截断的，并将在下一步中完全忽略它。**
 
 ---
 
-### **第 3 步：合并外部路径并生成最终 Sitemap (由 `scripts/merge-sitemap.js` 完成)**
+### **第 3 步：校准内部路径时间戳 (由 `scripts/merge-sitemap.js` 完成)**
 
-*   **目标**: 读取上一步生成的 `sitemap.xml`，解析并合并 `sitemap-paths.txt` 中的外部路径及其精确时间，最终生成完整的 `sitemap.xml`。
+*   **核心思想**: **数据校准**。此步骤是修正 `next-sitemap` 数据错误的第一道关卡，确保内部路径的时间戳准确无误。
+*   **目标**: 生成一个仅包含内部路径、但 `lastmod` 时间戳**完全正确**的中间版 Sitemap。
 *   **动作**:
-    1.  **[读取]** 脚本启动，首先读取 `out/sitemap.xml` 文件，解析出所有内部URL及其元数据。
-    2.  **[获取]** 脚本从 `sitemap-paths.txt` 源获取外部路径列表。
-    3.  **[解析]** 脚本按行解析外部路径文件。对于每一行（如 `/app/app2/|2025-09-30T21:22:25+08:00`）：
-        *   使用 `|` 分隔符拆分路径和日期。
-        *   路径部分作为 URL 的 `loc`。
-        *   日期部分作为 URL 的 `lastmod`。
-    4.  **[合并]** 将处理后的内部URL列表和外部URL列表合并。
-    5.  **[生成并覆盖]** 使用 `sitemap` 库，根据合并后的完整列表，生成最终的XML内容，并**覆盖写回**到 `out/sitemap.xml` 文件。
+    1.  **[加载可信数据源]** 脚本启动，首先读取并解析我们自己的缓存文件 `.next/cache/lastmod-map.json`，将其加载到内存 `lastmodMap` 中。
+    2.  **[提取路径，忽略时间]** 读取 `next-sitemap` 生成的中间 `out/sitemap.xml` 文件。解析时，**只提取每个 URL 的路径 (`<loc>`)**，并**完全忽略**其中错误的 `<lastmod>` 标签。
+    3.  **[校准时间]** 遍历提取出的内部路径列表。对于每个路径，从内存中的 `lastmodMap` 查找并应用其对应的、正确的、完整的 `lastmod` 时间戳。
+    4.  **[生成并覆盖]** 使用 `xmlbuilder2` 等库，根据**校准后**的内部 URL 列表，生成新的 XML 内容，并**覆盖写回**到 `out/sitemap.xml` 文件。
+*   **产物**: `out/sitemap.xml` 文件被更新。此时，它包含了所有内部路径，并且每个路径的 `lastmod` 时间戳都是精确的。它将作为下一步的输入。
+
+### **第 4 步：合并外部路径并生成最终 Sitemap (由 `scripts/merge-sitemap.js` 完成)**
+
+*   **核心思想**: **增量合并**。此步骤负责将外部世界的路径集成进来，完成最终的 Sitemap。
+*   **目标**: 将外部路径合并到已校准的内部 Sitemap 中，生成最终的 `sitemap.xml`。
+*   **动作**:
+    1.  **[读取已校准的Sitemap]** 脚本继续执行，读取上一步生成的、时间已校准的 `out/sitemap.xml` 文件，并解析出所有内部 URL 列表。
+    2.  **[获取外部路径]** 从 `sitemap-paths.txt` 源获取外部路径列表及其 `lastmod` 时间。
+    3.  **[合并]** 将内部 URL 列表和外部 URL 列表合并成一个完整的 URL 集合。
+    4.  **[生成并覆盖]** 使用 `xmlbuilder2` 等库，根据合并后的完整列表，生成最终的 XML 内容，并**再次覆盖写回**到 `out/sitemap.xml` 文件。
+*   **最终产物**: `out/sitemap.xml` 文件现在是一个包含所有内部和外部路径、且所有 `lastmod` 时间戳都完全正确的最终版本。
 
 *   **产品经理检验标准**:
     *   **验证方法**: 部署后，访问 `https://tianfei.chat/sitemap.xml`。
