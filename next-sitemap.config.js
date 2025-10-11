@@ -14,11 +14,7 @@ const getLastmodMap = () => {
     if (fs.existsSync(filePath)) {
       console.log('[Sitemap] Found lastmod-map.json from temp directory.')
       const fileContent = fs.readFileSync(filePath, 'utf-8')
-      // Add detailed logging to inspect the content
-      console.log('[Sitemap Debug] Raw file content:', fileContent)
-      const parsedMap = JSON.parse(fileContent)
-      console.log('[Sitemap Debug] Parsed map object keys (first 5):', Object.keys(parsedMap).slice(0, 5))
-      return parsedMap
+      return JSON.parse(fileContent)
     }
   } catch (e) {
     console.warn('[Sitemap] Failed to read or parse lastmod-map.json, will use default dates.', e)
@@ -42,8 +38,11 @@ module.exports = {
   // The transform function allows us to customize the sitemap entries.
   // We use it here to inject the precise `lastmod` time for each post.
   transform: async (config, path) => {
-    // Use the path directly as the key, as it matches the `href` property used to build the map.
+    // Use the path directly as the key.
     const lastmodTimestamp = lastmodMap[path]
+
+    // Add final debug log inside the transform function
+    console.log(`[Sitemap Transform] Path: "${path}", Found Timestamp: ${lastmodTimestamp || 'Not Found'}`)
 
     // Use the precise lastmod if found, otherwise fall back to the current date.
     const lastmod = lastmodTimestamp
