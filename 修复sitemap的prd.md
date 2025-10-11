@@ -119,3 +119,62 @@ node scripts/merge-sitemap.js
         1.  **去重**: 移除所有重复的URL。
         2.  **清洗**: 移除所有格式不正确的URL（通过一个更严格的规则：路径必须以`/`开头且内部不能包含`://`）。
     *   **效果**: 这一最终的质检步骤确保了无论上游数据如何，最终输出的 `sitemap.xml` 都是干净、规范且唯一的，进一步提升了健壮性。
+
+---
+
+## 6. Vercel 部署优化 (解决 Serverless Function 体积超限)
+
+本章节记录了解决 Vercel 部署中反复出现的“Serverless Function 体积超限 (250 MB)”错误的完整排查过程。
+
+### 6.1 问题描述
+
+在为 Sitemap 生成和构建优化引入了构建时缓存 (`.next/cache`) 后，Vercel 部署开始失败。构建日志显示，大型缓存目录（特别是 `.next/cache/webpack`）被错误地打包进了最终的 Serverless Function，导致其体积超限。
+
+### 6.2 排查与解决方案演进
+
+#### 尝试 1: 使用 `/tmp` 目录 (失败)
+
+*   **假设**: Vercel 不会打包 `/tmp` 目录，将缓存写入此处可解决体积问题。
+*   **结果**: 导致了新的失败。Vercel 的构建步骤（如 `next build` 和后续的 `node` 脚本）在隔离的环境中运行。一个步骤中写入 `/tmp` 的文件在下一个步骤中不可用，破坏了 Sitemap 的生成逻辑。
+*   **结论**: 对于多步骤构建过程，缓存必须存储在项目目录内的持久化路径中。
+
+#### 尝试 2: 使用 `.vercelignore` (失败)
+
+*   **假设**: 将缓存放入 `.next/cache`，然后使用 `.vercelignore` 文件从最终部署包中排除此目录。
+*   **结果**: 同样失败。日志清楚地显示 `.next/cache` 仍被包含在内。
+*   **结论**: Vercel 的依赖追踪机制 (`outputFileTracing`) 在 `.vercelignore` 规则生效**之前**运行。如果追踪器将某个文件识别为依赖项，无论 `.vercelignore` 规则如何，它都将被包含在内。追踪器错误地将我们的构建时缓存识别为了运行时依赖。
+
+#### 尝试 3: 错误的 `outputFileTracingExcludes` 配置 (失败)
+
+*   **假设**: 正确的工具是 `next.config.js` 中的 `outputFileTracingExcludes`，以直接控制依赖追踪器。
+*   **初始实现**:
+    ```javascript
+    // next.config.js - 错误
+    experimental: {
+      outputFileTracingExcludes: {
+        '**/.next/cache/**': ['**/.next/cache/**']
+      }
+    }
+    ```
+*   **结果**: 失败。配置未产生任何效果。
+*   **根本原因分析**: 对配置模式的严重误解。此对象中的 `key` 应该是一个页面路由（例如 `'/about'`），排除规则将应用于该路由。`value` 才是要排除的 glob 模式列表。使用 glob 模式作为 key 是不正确的。
+
+#### 尝试 4: 正确的 `outputFileTracingExcludes` 配置 (成功)
+
+*   **假设**: 排除规则的 key 应该是 `'*'`，以将其应用于所有页面和路由。
+*   **最终实现**:
+    ```javascript
+    // next.config.js - 正确
+    experimental: {
+      outputFileTracingExcludes: {
+        '*': ['**/.next/cache/**']
+      }
+    }
+    ```
+*   **结果**: 成功。构建日志确认 `.next/cache` 不再包含在 Serverless Function 中，部署通过。
+
+### 6.3 最终结论与关键要点
+
+`next.config.js` 中的 `outputFileTracingExcludes` 选项是防止构建时产物被打包到 Vercel Serverless Function 中的权威解决方案。
+
+**关键要点**: 该配置需要一个指定范围（路由）的 `key` 和一个列出排除模式的 `value`。要将规则全局应用于所有路由，`key` **必须是** `'*'`。
