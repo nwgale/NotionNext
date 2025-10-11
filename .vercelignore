@@ -1,4 +1,4 @@
 # Ignore the entire Next.js cache directory from Vercel deployments.
-# This directory can contain large files (like the sitemap cache)
-# that are needed during the build but not at runtime.
+# This prevents the large `lastmod-map.json` and other cache files
+# from being bundled into the serverless function, solving the size limit issue.
 .next/cache
