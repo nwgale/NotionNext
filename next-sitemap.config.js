@@ -2,24 +2,20 @@ const BLOG = require('./blog.config')
 const fs = require('fs')
 const path = require('path')
 
-/**
- * Reads the lastmod map generated during the build process.
- * This map contains the precise last modification time for each internal post.
- * @returns {Object} A map of page paths to their lastmod ISO strings.
- */
 const getLastmodMap = () => {
   try {
-    const os = require('os')
-    const filePath = path.join(os.tmpdir(), 'notion-next-lastmod-map.json')
+    // Read from the persistent cache directory
+    const cacheDir = path.resolve('.next', 'cache')
+    const filePath = path.join(cacheDir, 'lastmod-map.json')
     if (fs.existsSync(filePath)) {
-      // console.log('[Sitemap] Found lastmod-map.json from temp directory.')
-      const fileContent = fs.readFileSync(filePath, 'utf-8')
-      return JSON.parse(fileContent)
+      console.log(`[Sitemap] Reading lastmod-map.json from ${filePath}`)
+      return JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+    } else {
+      console.log(`[Sitemap] Cache file not found at ${filePath}. Defaulting to build time.`)
     }
   } catch (e) {
-    console.warn('[Sitemap] Failed to read or parse lastmod-map.json, will use default dates.', e)
+    console.warn('[Sitemap] Failed to read or parse lastmod-map.json.', e)
   }
-  // console.log('[Sitemap] lastmod-map.json not found in temp directory, using default dates.')
   return {}
 }
 
@@ -41,12 +37,7 @@ module.exports = {
     // Use the path directly as the key, as it matches the `href` property used to build the map.
     const lastmodTimestamp = lastmodMap[path]
 
-    // Use the precise lastmod if found, otherwise fall back to the current date.
-    const lastmod = lastmodTimestamp
-      ? new Date(lastmodTimestamp).toISOString()
-      // For index pages like /tag, /category, etc., which don't have a specific lastmod,
-      // using the build time is a standard and acceptable practice.
-      : new Date().toISOString()
+    const lastmod = lastmodTimestamp ? new Date(lastmodTimestamp).toISOString() : new Date().toISOString()
 
     return {
       loc: path, // => this will be exported as http://<link>/<path>

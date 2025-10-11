@@ -1,0 +1,4 @@
+# Ignore the entire Next.js cache directory from Vercel deployments.
+# This directory can contain large files (like the sitemap cache)
+# that are needed during the build but not at runtime.
+.next/cache
