@@ -219,7 +219,7 @@ const nextConfig = {
   experimental: {
     scrollRestoration: true,
     outputFileTracingExcludes: {
-      '**/.next/cache/**': ['**/.next/cache/**']
+      '*': ['**/.next/cache/**']
     }
   },
   exportPathMap: function (
