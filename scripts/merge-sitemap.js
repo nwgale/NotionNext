@@ -29,9 +29,17 @@ async function mergeSitemaps() {
     const internalUrls = internalSitemapJson?.urlset?.url?.map(u => {
         // Convert absolute URL from next-sitemap to relative path
         const urlObject = new URL(u.loc[0]);
+        const relPath = urlObject.pathname;
+        const lastmod = u.lastmod?.[0];
+
+        // Debug log to inspect the lastmod value from the intermediate sitemap
+        if (relPath.startsWith('/article/')) {
+          console.log(`[Merge Sitemap Debug] Path: ${relPath}, Lastmod from intermediate file: ${lastmod}`);
+        }
+
         return {
-            url: urlObject.pathname, // This gives the relative path e.g., '/archive'
-            lastmod: u.lastmod?.[0],
+            url: relPath, // This gives the relative path e.g., '/archive'
+            lastmod: lastmod,
             changefreq: u.changefreq?.[0],
             priority: u.priority?.[0],
         }
