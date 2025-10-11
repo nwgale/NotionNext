@@ -12,14 +12,14 @@ const getLastmodMap = () => {
     const os = require('os')
     const filePath = path.join(os.tmpdir(), 'notion-next-lastmod-map.json')
     if (fs.existsSync(filePath)) {
-      console.log('[Sitemap] Found lastmod-map.json from temp directory.')
+      // console.log('[Sitemap] Found lastmod-map.json from temp directory.')
       const fileContent = fs.readFileSync(filePath, 'utf-8')
       return JSON.parse(fileContent)
     }
   } catch (e) {
     console.warn('[Sitemap] Failed to read or parse lastmod-map.json, will use default dates.', e)
   }
-  console.log('[Sitemap] lastmod-map.json not found in temp directory, using default dates.')
+  // console.log('[Sitemap] lastmod-map.json not found in temp directory, using default dates.')
   return {}
 }
 
@@ -38,15 +38,14 @@ module.exports = {
   // The transform function allows us to customize the sitemap entries.
   // We use it here to inject the precise `lastmod` time for each post.
   transform: async (config, path) => {
-    // Use the path directly as the key.
+    // Use the path directly as the key, as it matches the `href` property used to build the map.
     const lastmodTimestamp = lastmodMap[path]
-
-    // Add final debug log inside the transform function
-    console.log(`[Sitemap Transform] Path: "${path}", Found Timestamp: ${lastmodTimestamp || 'Not Found'}`)
 
     // Use the precise lastmod if found, otherwise fall back to the current date.
     const lastmod = lastmodTimestamp
       ? new Date(lastmodTimestamp).toISOString()
+      // For index pages like /tag, /category, etc., which don't have a specific lastmod,
+      // using the build time is a standard and acceptable practice.
       : new Date().toISOString()
 
     return {
