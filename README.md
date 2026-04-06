@@ -1,3 +1,46 @@
+## 2026-04-06 空站故障复盘（tianfei.chat）
+
+### 现象
+- 网站构建成功但首页内容为空，`posts` 列表变成空数组，最终发布了“空站”。
+
+### 根因
+- 本次不是 Notion 数据库内容被改坏，而是 Notion 接口返回结构发生了波动：
+  - `collection_query` 可能为空对象 `{}`。
+  - 但 `collection_view.page_sort` 里仍然有文章 ID。
+- 旧逻辑强依赖 `collection_query[collectionId][viewId]`，当它缺失时会导致拿不到 `pageIds`，进而得到空内容。
+
+### 已修复内容
+- 代码层容错（`lib/notion/getAllPageIds.js`）
+  - 读取 `collection_query` 改为安全访问，不再因为缺字段崩溃。
+  - 主路径取不到文章时，先回退遍历 `collection_query`。
+  - 若 `collection_query` 仍为空，再回退到 `collection_view.page_sort` 恢复 `pageIds`。
+- 构建层兜底（`lib/db/getSiteData.js`）
+  - 在 `CI/EXPORT` 环境下，只要出现 fallback 数据或空数据，直接抛错终止构建。
+- 部署层阻断（`.github/workflows/deploy-to-domestic.yml`）
+  - 增加 `Validate build data health`：
+    - `out/index.html` 无 `__NEXT_DATA__` 直接失败。
+    - `posts` 为空直接失败。
+    - 出现 `oops-error-page` fallback 直接失败。
+
+### 为什么“什么都没改又坏了”
+- 因为我们依赖的是 Notion 的非官方稳定契约字段，接口偶发返回差异（字段缺失或形态变化）是可能发生的。
+- 旧实现对单一字段路径过于依赖，导致“上游轻微波动 -> 下游空站”。
+
+### 如何确保下次不再发生同类问题
+- 保障机制已经是三层：
+  - 数据获取层：多路径回退拿 `pageIds`。
+  - 构建层：空数据/fallback 直接 fail build。
+  - 发布层：部署前健康检查，不健康就禁止 rsync 发布。
+- 结果是：即便未来 Notion 再次波动，最坏情况也会“部署失败并保留旧站”，而不是“发布空站”。
+
+### 运维建议
+- 每次故障先看 GitHub Actions 的 `Validate build data health` 步骤。
+- 该步骤失败时优先看日志中的以下关键词：
+  - `collectionQueryTopKeys`
+  - `Recovered pageIds from collection_view.page_sort`
+  - `Final pageIds is empty`
+  - `Fallback post detected`
+
 基于我阅读的文档和代码，我对这个NotionNext项目有了比较深入的理解。这是一个功能丰富的静态博客系统，具有以下特点：
 项目概述
 NotionNext是一个基于Next.js和Notion API的静态博客系统，可以将Notion页面内容自动生成美观的个人博客。它支持双部署策略：
