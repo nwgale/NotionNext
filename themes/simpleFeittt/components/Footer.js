@@ -5,53 +5,62 @@ import SmartLink from '@/components/SmartLink'
 import { useEffect, useState } from 'react'
 
 /**
- * 解析页脚链接配置
- * 支持两种格式：
- * 1. 纯文本格式：例如 "个人简介" - 显示为纯文本，不是链接
- * 2. 文本+链接格式：例如 "个人简介(http://example.com)" 或 "个人简介(/about)" - 显示为链接
- * 
- * @param {string} configText 配置文本
- * @returns {Object} 解析后的标题和链接数组
+ * 解析页脚链接配置，兼容以下格式：
+ * - Markdown 链接：[个人简介](/about)
+ * - 文本+链接：个人简介(/about)
+ * - 纯文本：个人简介
  */
-const parseFooterLinks = (configText) => {
+const parseFooterLinks = configText => {
   if (!configText) return { title: '', links: [] }
-  
+
   const lines = configText.split('\n').filter(line => line.trim() !== '')
   let title = ''
   const links = []
-  
-  // 查找标题（以####开头的行）
+
+  // 标题行：#### 标题
   const titleLine = lines.find(line => line.trim().startsWith('####'))
   if (titleLine) {
     title = titleLine.replace(/^####\s*/, '').trim()
   }
-  
-  // 处理每一行
+
   lines.forEach(line => {
-    // 跳过标题行
     if (line.trim().startsWith('####')) return
-    
-    const trimmedLine = line.trim()
-    if (!trimmedLine) return
-    
-    // 匹配文本+链接格式：文本(链接)
-    const linkMatch = trimmedLine.match(/^(.+?)\s*\((.+?)\)$/)
-    
-    if (linkMatch) {
-      // 文本+链接格式
+
+    // 兼容 markdown 列表前缀：-, *, 1.
+    const normalizedLine = line
+      .trim()
+      .replace(/^[-*]\s+/, '')
+      .replace(/^\d+\.\s+/, '')
+      .trim()
+    if (!normalizedLine) return
+
+    // 格式1：Markdown [text](url)
+    const markdownLinkMatch = normalizedLine.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
+    if (markdownLinkMatch) {
       links.push({
-        text: linkMatch[1].trim(),
-        url: linkMatch[2].trim()
+        text: markdownLinkMatch[1].trim(),
+        url: markdownLinkMatch[2].trim()
       })
-    } else {
-      // 纯文本格式
-      links.push({
-        text: trimmedLine,
-        url: '#'
-      })
+      return
     }
+
+    // 格式2：text(url)
+    const textLinkMatch = normalizedLine.match(/^(.+?)\s*\((.+?)\)$/)
+    if (textLinkMatch) {
+      links.push({
+        text: textLinkMatch[1].trim(),
+        url: textLinkMatch[2].trim()
+      })
+      return
+    }
+
+    // 格式3：纯文本
+    links.push({
+      text: normalizedLine,
+      url: '#'
+    })
   })
-  
+
   return { title, links }
 }
 
