@@ -76,6 +76,12 @@ jobs:
           }
           const data = JSON.parse(match[1])
           const posts = data?.props?.pageProps?.posts || []
+          if (!Array.isArray(posts) || posts.length === 0) {
+            console.error(
+              '[Health Check] Empty posts list detected. Stop deployment.'
+            )
+            process.exit(1)
+          }
           const hasFallbackPost = posts.some(
             p => p?.id === 'oops-error-page' || p?.slug === 'oops'
           )
