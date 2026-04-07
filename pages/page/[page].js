@@ -41,9 +41,14 @@ export async function getStaticProps({ params: { page }, locale }) {
   const allPosts = allPages?.filter(
     page => page.type === 'Post' && page.status === 'Published'
   )
+  const sortedPosts = [...(allPosts || [])].sort((a, b) => {
+    const dateA = a?.publishDate || a?.lastEditedDate || 0
+    const dateB = b?.publishDate || b?.lastEditedDate || 0
+    return dateB - dateA
+  })
   const POSTS_PER_PAGE = siteConfig('POSTS_PER_PAGE', 12, props?.NOTION_CONFIG)
   // 处理分页
-  props.posts = allPosts.slice(
+  props.posts = sortedPosts.slice(
     POSTS_PER_PAGE * (page - 1),
     POSTS_PER_PAGE * page
   )

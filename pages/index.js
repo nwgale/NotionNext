@@ -34,6 +34,11 @@ export async function getStaticProps(req) {
   props.posts = props.allPages?.filter(
     page => page.type === 'Post' && page.status === 'Published'
   )
+  props.posts = [...(props.posts || [])].sort((a, b) => {
+    const dateA = a?.publishDate || a?.lastEditedDate || 0
+    const dateB = b?.publishDate || b?.lastEditedDate || 0
+    return dateB - dateA
+  })
 
   // 处理分页
   if (siteConfig('POST_LIST_STYLE') === 'scroll') {
