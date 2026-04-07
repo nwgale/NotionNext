@@ -142,6 +142,32 @@ jobs:
             process.exit(1)
           }
 
+          const articleDir = '.next/server/pages/article'
+          if (fs.existsSync(articleDir)) {
+            const brokenArticlePages = fs
+              .readdirSync(articleDir)
+              .filter(name => name.endsWith('.json'))
+              .filter(name => {
+                try {
+                  const data = JSON.parse(
+                    fs.readFileSync(path.join(articleDir, name), 'utf-8')
+                  )
+                  const blockMap = data?.pageProps?.post?.blockMap?.block
+                  return !blockMap || Object.keys(blockMap).length === 0
+                } catch (error) {
+                  return true
+                }
+              })
+
+            if (brokenArticlePages.length > 0) {
+              console.error(
+                `[Health Check] ${brokenArticlePages.length} article pages have empty blockMap.`
+              )
+              console.error(brokenArticlePages.slice(0, 20))
+              process.exit(1)
+            }
+          }
+
           console.log('[Health Check] Build data is healthy, continue deploy.')
           NODE
 
