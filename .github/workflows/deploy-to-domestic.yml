@@ -91,6 +91,57 @@ jobs:
             )
             process.exit(1)
           }
+
+          // Guard against partial build: every published post slug should have a prerender route.
+          const path = require('path')
+          const os = require('os')
+          const manifestPath = '.next/prerender-manifest.json'
+          if (!fs.existsSync(manifestPath)) {
+            console.error('[Health Check] Missing .next/prerender-manifest.json')
+            process.exit(1)
+          }
+          const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'))
+          const routeSet = new Set(Object.keys(manifest?.routes || {}))
+
+          const tmpDir = os.tmpdir()
+          const cacheFiles = fs
+            .readdirSync(tmpDir)
+            .filter(name => name.startsWith('notion-next-site-data-') && name.endsWith('.json'))
+            .map(name => ({
+              name,
+              mtimeMs: fs.statSync(path.join(tmpDir, name)).mtimeMs
+            }))
+            .sort((a, b) => b.mtimeMs - a.mtimeMs)
+
+          if (cacheFiles.length === 0) {
+            console.error('[Health Check] Missing notion-next-site-data cache file in tmp dir.')
+            process.exit(1)
+          }
+
+          const cacheFilePath = path.join(tmpDir, cacheFiles[0].name)
+          const cacheData = JSON.parse(fs.readFileSync(cacheFilePath, 'utf-8'))
+          const publishedPosts = (cacheData?.allPages || []).filter(post => {
+            const slug = post?.slug
+            return (
+              post?.type === 'Post' &&
+              post?.status === 'Published' &&
+              typeof slug === 'string' &&
+              slug.length > 0 &&
+              !slug.startsWith('http')
+            )
+          })
+          const missingRoutes = publishedPosts
+            .map(post => `/${String(post.slug).replace(/^\/+/, '')}`)
+            .filter(route => !routeSet.has(route))
+
+          if (missingRoutes.length > 0) {
+            console.error(
+              `[Health Check] Missing prerender routes for ${missingRoutes.length} published posts.`
+            )
+            console.error(missingRoutes.slice(0, 20))
+            process.exit(1)
+          }
+
           console.log('[Health Check] Build data is healthy, continue deploy.')
           NODE
 
